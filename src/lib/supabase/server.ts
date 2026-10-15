@@ -10,22 +10,28 @@ export async function createClient() {
   }
 
   const cookieStore = await cookies();
+  type CookieOptions = Parameters<typeof cookieStore.set>[2];
+  type CookieToSet = {
+    name: string;
+    value: string;
+    options?: CookieOptions;
+  };
 
   return createServerClient(url, key, {
     cookies: {
       getAll() {
         return cookieStore.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet: CookieToSet[]) {
         try {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set(name, value, options);
           });
         } catch {
           // Les Server Components ne peuvent pas toujours écrire les cookies.
-          // La mise à jour de session sera gérée par le middleware/proxy à l’étape 2.
+          // La mise à jour de session sera gérée par le middleware.
         }
-      }
-    }
+      },
+    },
   });
 }
