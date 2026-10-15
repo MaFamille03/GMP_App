@@ -1017,3 +1017,26 @@ button, input, select, textarea { font: inherit; }
   .login-reference-main { padding: 24px 18px 34px; }
   .login-reference-main .auth-card { width: min(100%, 560px); padding: 26px 22px; }
 }
+
+
+/* Connexion et inscription : panneau de marque identique, texte plus lisible */
+.login-reference-side {
+  background-image: linear-gradient(115deg, rgba(255,255,255,.88) 0%, rgba(255,255,255,.76) 42%, rgba(221,248,249,.54) 100%), url('/images/gmp-medical-background.jpg');
+  background-position: center;
+  background-size: cover;
+}
+.login-reference-copy h2,
+.login-reference-copy > p,
+.login-reference-feature strong,
+.login-reference-feature small,
+.login-reference-brand p,
+.login-reference-secure {
+  text-shadow: 0 1px 1px rgba(255,255,255,.8);
+}
+.login-reference-copy > p { color: #304d60; font-weight: 500; }
+.login-reference-feature small { color: #3f5d73; font-weight: 500; }
+.login-reference-secure { color: #123540; }
+.login-reference-main .auth-card { max-height: calc(100svh - 48px); overflow-y: auto; }
+@media (max-width: 850px) {
+  .login-reference-main .auth-card { max-height: none; overflow: visible; }
+}

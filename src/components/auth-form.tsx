@@ -12,6 +12,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
+  const [registrationCode, setRegistrationCode] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -40,6 +41,18 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       const supabase = createClient();
 
       if (isRegister) {
+        const codeResponse = await fetch("/api/register/validate-code", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: registrationCode })
+        });
+        const codeResult = await codeResponse.json().catch(() => null);
+        if (!codeResponse.ok) {
+          setErrorMessage(codeResult?.error || "Le code d’accès est incorrect. Vérifie-le auprès de l’administrateur GMP.");
+          setBusy(false);
+          return;
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email: email.trim().toLowerCase(),
           password,
@@ -90,8 +103,12 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         } else {
           setErrorMessage("Pour protéger ton compte, attends quelques instants avant de demander un nouvel e-mail de confirmation.");
         }
+      } else if (isRegister && normalized.includes("user already registered")) {
+        setErrorMessage("Un compte existe déjà avec cette adresse e-mail. Essaie de te connecter.");
+      } else if (isRegister && normalized.includes("password")) {
+        setErrorMessage("Le mot de passe ne respecte pas les critères requis. Utilise au moins 8 caractères.");
       } else {
-        setErrorMessage(rawMessage);
+        setErrorMessage(isRegister ? "La création du compte a échoué. Vérifie les informations saisies et réessaie." : rawMessage);
       }
     } finally {
       setBusy(false);
@@ -112,6 +129,22 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       <form onSubmit={handleSubmit} className="auth-form">
         {isRegister && (
           <>
+            <label>
+              Code d’accès GMP
+              <input
+                type="password"
+                autoComplete="off"
+                value={registrationCode}
+                onChange={(event) => setRegistrationCode(event.target.value)}
+                placeholder="Saisis le code fourni par l’administrateur"
+                required
+                maxLength={100}
+                aria-describedby="registration-code-help"
+              />
+              <span className="field-help" id="registration-code-help">
+                Ce code est nécessaire pour créer un compte GMP. Il ne remplace pas ton mot de passe.
+              </span>
+            </label>
             <label>
               Nom et prénom
               <input

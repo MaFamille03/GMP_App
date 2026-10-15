@@ -45,3 +45,11 @@ Cette archive est une version de travail consolidée. Elle n’est pas certifié
 
 ## Compte administrateur et appareils par service
 Voir `docs/COMPTE_ADMINISTRATEUR_ET_VUE_PAR_SERVICE.md`. Pour promouvoir le compte `minnhindje@gmail.com`, exécuter manuellement `supabase/promote_admin_minnhindje.sql` dans le SQL Editor du projet Supabase GMP approprié, puis fermer et rouvrir la session. Ne jamais conférer le rôle administrateur depuis le navigateur.
+
+## Code d’accès pour la création des comptes GMP
+
+La page de création de compte demande désormais un **Code d’accès GMP**. La vérification se fait côté serveur via `POST /api/register/validate-code` ; le code n’est pas intégré au JavaScript envoyé au navigateur.
+
+Avant le déploiement, ajoute la variable d’environnement **`GMP_REGISTRATION_CODE`** dans Vercel → Settings → Environment Variables, avec la valeur communiquée par l’administrateur (actuellement `MinnhinD`), puis redéploie l’application. Ne mets pas ce code dans le dépôt Git ni dans `.env.example`. Si la variable serveur n’est pas configurée, la création de compte échoue volontairement avec un message en français.
+
+Le panneau gauche de connexion et d’inscription utilise désormais le même visuel, la même image de fond et les mêmes textes, avec un voile plus clair pour améliorer leur lisibilité.
