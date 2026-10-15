@@ -16,22 +16,16 @@ export async function createClient() {
       getAll() {
         return cookieStore.getAll();
       },
-      setAll(
-        cookiesToSet: Array<{
-          name: string;
-          value: string;
-          options?: any;
-        }>
-      ) {
+      setAll(cookiesToSet) {
         try {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set(name, value, options);
           });
         } catch {
           // Les Server Components ne peuvent pas toujours écrire les cookies.
-          // La mise à jour de session sera gérée par le middleware.
+          // La mise à jour de session sera gérée par le middleware/proxy à l’étape 2.
         }
-      },
-    },
+      }
+    }
   });
 }
