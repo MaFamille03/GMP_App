@@ -5,7 +5,7 @@ export default function LoginPage() {
     <main className="auth-layout">
       <div className="auth-side">
         <div className="brand auth-brand">
-          <div className="brand-mark">G</div>
+          <img className="gmp-logo" src="/gmp-polyclinique-logo.jpg" alt="Logo officiel GMP Polyclinique" />
           <div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div>
         </div>
         <div className="auth-side-copy">

@@ -63,9 +63,17 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         router.refresh();
       }
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Une erreur inattendue est survenue.";
-      setErrorMessage(message);
+      const rawMessage = error instanceof Error ? error.message : "Une erreur inattendue est survenue.";
+      const normalized = rawMessage.toLowerCase();
+      if (normalized.includes("invalid api key") || normalized.includes("apikey")) {
+        setErrorMessage("Connexion au service d’authentification impossible : la clé API Supabase est invalide. Dans Vercel → Settings → Environment Variables, vérifie NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY. Utilise la clé publique sb_publishable_… du même projet Supabase, jamais la clé secrète sb_secret_…. Puis redéploie l’application.");
+      } else if (normalized.includes("invalid login credentials")) {
+        setErrorMessage("Adresse e-mail ou mot de passe incorrect. Vérifie tes identifiants et réessaie.");
+      } else if (normalized.includes("email not confirmed")) {
+        setErrorMessage("Ton adresse e-mail n’a pas encore été confirmée. Consulte ta boîte de réception pour valider ton compte.");
+      } else {
+        setErrorMessage(rawMessage);
+      }
     } finally {
       setBusy(false);
     }
