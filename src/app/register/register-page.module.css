@@ -1,0 +1,165 @@
+.registerLayout {
+  background: #f7f9f9;
+}
+
+.registerSide {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0;
+  padding: clamp(28px, 4vw, 56px) clamp(28px, 4vw, 68px);
+}
+
+/* Le panneau et l’image partagent exactement le même blanc : aucun cadre
+   ou halo gris ne vient concurrencer le logo officiel. */
+.brandPanel {
+  width: min(100%, 430px) !important;
+  min-height: 170px !important;
+  padding: 20px 30px !important;
+  background: #fff !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 14px 36px rgba(22, 68, 74, 0.10) !important;
+}
+
+.logo {
+  width: 100% !important;
+  max-width: 370px !important;
+  max-height: 145px !important;
+  object-fit: contain;
+  background: #fff;
+}
+
+.sideCopy {
+  max-width: 520px !important;
+  padding-top: clamp(24px, 4vh, 42px) !important;
+  padding-bottom: 20px !important;
+}
+
+.sideCopy h2 {
+  max-width: 500px;
+}
+
+.featureList {
+  display: grid;
+  gap: 11px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  color: #244f55;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.featureList li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.featureList li span {
+  display: inline-grid;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 50%;
+  color: #087985;
+  background: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sideFooter {
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.registerMain {
+  background: #f7f9f9;
+}
+
+.formHeading {
+  width: min(100%, 490px);
+}
+
+.secureLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: #527178;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.secureLabel::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #168d9a;
+  box-shadow: 0 0 0 4px #e3f2f2;
+  content: "";
+}
+
+.privacyNote {
+  margin: 18px 0 0;
+  color: #7b8b8f;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .registerSide {
+    padding: 24px clamp(20px, 5vw, 40px) !important;
+  }
+
+  .brandPanel {
+    width: min(100%, 340px) !important;
+    min-height: 125px !important;
+    padding: 15px 24px !important;
+  }
+
+  .logo {
+    max-height: 110px !important;
+  }
+
+  .sideCopy {
+    padding-top: 22px !important;
+  }
+
+  .featureList {
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .sideFooter {
+    display: none;
+  }
+
+  .secureLabel {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brandPanel {
+    min-height: 105px !important;
+    padding: 12px 20px !important;
+    border-radius: 14px !important;
+  }
+
+  .logo {
+    max-height: 90px !important;
+  }
+
+  .featureList {
+    font-size: 12px;
+  }
+
+  .privacyNote {
+    text-align: left;
+  }
+}
