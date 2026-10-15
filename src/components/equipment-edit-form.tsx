@@ -8,7 +8,7 @@ type Ref = { id: string; name: string };
 type Equipment = {
   id: string; internal_code: string; designation: string; brand: string | null; model: string | null;
   manufacturer: string | null; serial_number: string | null; service_id: string | null; location_id: string | null;
-  operational_status: string; criticality: string; acquisition_date: string | null; commissioning_date: string | null;
+  operational_status: string; criticality: string; complexity: string | null; data_verification: string; verification_notes: string | null; acquisition_date: string | null; commissioning_date: string | null;
   acquisition_cost: number | null; theoretical_lifetime_years: number | null; next_maintenance_at: string | null; notes: string | null;
 };
 
@@ -35,6 +35,9 @@ export function EquipmentEditForm({ equipment, services, locations }: { equipmen
       location_id: String(form.get("location_id") || "") || null,
       operational_status: String(form.get("operational_status")),
       criticality: String(form.get("criticality")),
+      complexity: String(form.get("complexity") || "") || null,
+      data_verification: String(form.get("data_verification") || "to_verify"),
+      verification_notes: String(form.get("verification_notes") || "").trim() || null,
       acquisition_date: String(form.get("acquisition_date") || "") || null,
       commissioning_date: String(form.get("commissioning_date") || "") || null,
       acquisition_cost: form.get("acquisition_cost") ? Number(form.get("acquisition_cost")) : null,
@@ -63,6 +66,9 @@ export function EquipmentEditForm({ equipment, services, locations }: { equipmen
       <label>Emplacement<select name="location_id" defaultValue={equipment.location_id || ""}><option value="">Non renseigné</option>{locations.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
       <label>État opérationnel<select name="operational_status" defaultValue={equipment.operational_status}><option value="functional">Fonctionnel</option><option value="functional_restricted">Fonctionnement restreint</option><option value="broken">En panne</option><option value="under_maintenance">En maintenance</option><option value="out_of_service">Hors service</option><option value="retired">Réformé</option></select></label>
       <label>Criticité<select name="criticality" defaultValue={equipment.criticality || "normal"}><option value="critical">Critique</option><option value="high">Élevée</option><option value="normal">Normale</option><option value="low">Faible</option></select></label>
+      <label>Complexité technique<select name="complexity" defaultValue={equipment.complexity || ""}><option value="">À déterminer</option><option value="simple">Fonctionnement simple</option><option value="complex">Fonctionnement complexe</option></select></label>
+      <label>Vérification de l’inventaire<select name="data_verification" defaultValue={equipment.data_verification || "to_verify"}><option value="to_verify">À vérifier physiquement</option><option value="confirmed">Confirmé sur site</option><option value="not_provided">Informations non disponibles</option></select></label>
+      <label className="form-notes-label">Précisions sur la vérification<input name="verification_notes" maxLength={1000} defaultValue={equipment.verification_notes || ""} placeholder="Ex. plaque signalétique contrôlée le…"/></label>
     </div></section>
     <section className="form-section"><div className="form-section-heading"><span>03</span><div><h2>Cycle de vie et suivi</h2><p>Dates et informations administratives utiles au suivi du parc.</p></div></div><div className="form-grid">
       <label>Date d’acquisition<input name="acquisition_date" type="date" defaultValue={equipment.acquisition_date || ""}/></label><label>Date de mise en service<input name="commissioning_date" type="date" defaultValue={equipment.commissioning_date || ""}/></label>

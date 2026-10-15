@@ -15,6 +15,7 @@ export function BreakdownCreateForm({ equipment, preselected }: { equipment: Equ
     const form = new FormData(ev.currentTarget);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setError('Session expirée. Reconnecte-toi avant de déclarer la panne.'); setBusy(false); return; }
     const payload = {
       equipment_id: String(form.get('equipment_id')),
       symptom_description: String(form.get('symptom_description')).trim(),
@@ -22,7 +23,7 @@ export function BreakdownCreateForm({ equipment, preselected }: { equipment: Equ
       priority: String(form.get('priority')),
       initial_risk: String(form.get('initial_risk') || '').trim() || null,
       equipment_taken_out_of_service: form.get('equipment_taken_out_of_service') === 'on',
-      reported_by: user?.id || null,
+      reported_by: user.id,
       notes: String(form.get('notes') || '').trim() || null,
     };
     const { data, error: insertError } = await supabase.from('breakdowns').insert(payload).select('id').single();
@@ -30,7 +31,7 @@ export function BreakdownCreateForm({ equipment, preselected }: { equipment: Equ
 
     // Règle GMP : un équipement déclaré en panne passe automatiquement à l'état « broken ».
     const { error: equipmentError } = await supabase.from('equipment')
-      .update({ operational_status: 'broken', updated_by: user?.id || null })
+      .update({ operational_status: 'out_of_service', updated_by: user.id })
       .eq('id', payload.equipment_id);
     if (equipmentError) {
       setError(`Le signalement est enregistré, mais le passage automatique de l’équipement hors service a échoué : ${equipmentError.message}. Corrige l’état de l’équipement avant de continuer.`);
@@ -57,9 +58,9 @@ export function BreakdownCreateForm({ equipment, preselected }: { equipment: Equ
       </select>
     </label>
     <label>Risque ou conséquence identifiée<textarea name="initial_risk" rows={2} placeholder="Ex. équipement nécessaire aux urgences…" /></label>
-    <label className="checkbox-label"><input type="checkbox" name="equipment_taken_out_of_service" /> Équipement isolé / mis hors service immédiatement (confirmation terrain)</label>
+    <label className="checkbox-label"><input type="checkbox" name="equipment_taken_out_of_service" /> J’ai physiquement isolé / mis hors service l’équipement</label>
     <label>Notes complémentaires<textarea name="notes" rows={2} /></label>
-    <p className="helper-text">À l’enregistrement du signalement, l’équipement passe automatiquement à l’état « en panne ». Confirme sur le terrain sa mise hors service lorsque nécessaire.</p>
+    <p className="helper-text">Le signalement fait passer l’équipement en statut hors service dans le registre. Si l’appareil présente un danger, applique aussi immédiatement la procédure de sécurisation physique du GMP.</p>
     <button className="primary-button" disabled={busy || equipment.length === 0}>{busy ? 'Enregistrement…' : 'Enregistrer le signalement'}</button>
     {equipment.length === 0 && <p className="helper-text">Il faut d’abord enregistrer un équipement dans l’inventaire.</p>}
   </form>;

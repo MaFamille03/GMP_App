@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 
 type Equipment = {
   id: string; internal_code: string; designation: string; brand: string | null; model: string | null;
-  operational_status: string; criticality: string | null; next_maintenance_at: string | null;
+  operational_status: string; criticality: string | null; complexity: string | null; data_verification: string; next_maintenance_at: string | null;
   services: { name: string } | null; locations: { name: string } | null; photo_url: string | null;
 };
 
@@ -22,16 +22,18 @@ export function EquipmentInventory({ items, isAdmin }: { items: Equipment[]; isA
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [service, setService] = useState("all");
+  const [complexity, setComplexity] = useState("all");
   const services = useMemo(() => Array.from(new Set(items.map((item) => item.services?.name).filter((name): name is string => Boolean(name)))).sort((a, b) => a.localeCompare(b, "fr")), [items]);
   const filtered = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase("fr");
     return items.filter((item) => {
       const matchesQuery = !needle || [item.internal_code, item.designation, item.brand, item.model, item.services?.name, item.locations?.name].some((value) => value?.toLocaleLowerCase("fr").includes(needle));
-      return matchesQuery && (status === "all" || item.operational_status === status) && (service === "all" || item.services?.name === service);
+      return matchesQuery && (status === "all" || item.operational_status === status) && (service === "all" || item.services?.name === service) && (complexity === "all" || (complexity === "unclassified" ? !item.complexity : item.complexity === complexity));
     });
-  }, [items, query, status, service]);
+  }, [items, query, status, service, complexity]);
   const functionalCount = items.filter((item) => item.operational_status === "functional").length;
   const unavailableCount = items.filter((item) => ["broken", "out_of_service", "under_maintenance"].includes(item.operational_status)).length;
+  const needsVerification = items.filter((item) => item.data_verification !== "confirmed").length;
 
   function exportCsv() {
     const headers = ["Code interne", "Désignation", "Marque", "Modèle", "Service", "Emplacement", "État", "Criticité", "Prochaine maintenance"];
@@ -47,18 +49,20 @@ export function EquipmentInventory({ items, isAdmin }: { items: Equipment[]; isA
       <article className="inventory-stat"><span>Équipements enregistrés</span><strong>{items.length}</strong><small>Ensemble du parc référencé</small></article>
       <article className="inventory-stat"><span>Fonctionnels</span><strong>{functionalCount}</strong><small>{items.length ? Math.round(functionalCount / items.length * 100) : 0}% du parc</small></article>
       <article className="inventory-stat"><span>Indisponibles ou en maintenance</span><strong>{unavailableCount}</strong><small>À surveiller en priorité</small></article>
+      <article className="inventory-stat"><span>Fiches à vérifier</span><strong>{needsVerification}</strong><small>Inventaire physique à confirmer</small></article>
     </section>
     <div className="inventory-toolbar">
       <label className="search-field"><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher code, appareil, marque…" aria-label="Rechercher un équipement" /></label>
       <label className="filter-field"><span>État</span><select value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">Tous les états</option>{Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
       <label className="filter-field"><span>Service</span><select value={service} onChange={(event) => setService(event.target.value)}><option value="all">Tous les services</option>{services.map((name) => <option key={name} value={name}>{name}</option>)}</select></label>
+      <label className="filter-field"><span>Complexité</span><select value={complexity} onChange={(event) => setComplexity(event.target.value)}><option value="all">Toutes</option><option value="simple">Simple</option><option value="complex">Complexe</option><option value="unclassified">À déterminer</option></select></label>
       <button className="secondary-button" type="button" onClick={exportCsv}>Exporter CSV</button>
       {isAdmin && <Link className="primary-button inventory-add" href="/equipment/new">Ajouter un équipement</Link>}
     </div>
     <p className="inventory-result-count">{filtered.length} résultat(s) affiché(s) sur {items.length} équipement(s).</p>
     {filtered.length === 0 ? <div className="empty-state"><div className="empty-state-icon">⌕</div><h3>Aucun équipement trouvé</h3><p>Modifie les critères de recherche ou les filtres. Si le parc est vide, ajoute une première fiche équipement.</p>{isAdmin && items.length === 0 && <Link className="primary-button" href="/equipment/new">Enregistrer un équipement</Link>}</div> : <div className="equipment-grid">{filtered.map((item) => <Link className="equipment-card" href={`/equipment/${item.id}`} key={item.id}>
       <div className="equipment-card-image">{item.photo_url ? <img src={item.photo_url} alt={`Photo de ${item.designation}`} loading="lazy" /> : <div className="equipment-image-placeholder"><span aria-hidden="true">▧</span><span>Photo non renseignée</span></div>}<span className={`status-badge ${statusClasses[item.operational_status] || "status-out"}`}>{statusLabels[item.operational_status] || item.operational_status}</span></div>
-      <div className="equipment-card-body"><span className="equipment-code">{item.internal_code}</span><h3>{item.designation}</h3><p>{[item.brand, item.model].filter(Boolean).join(" · ") || "Marque et modèle non renseignés"}</p><div className="equipment-card-meta"><span>{item.services?.name || "Service non renseigné"}</span><span>{item.locations?.name || "Emplacement non renseigné"}</span></div><div className="equipment-card-footer"><span>{item.next_maintenance_at ? `Maintenance : ${item.next_maintenance_at}` : "Maintenance non planifiée"}</span><span>Voir la fiche →</span></div></div>
+      <div className="equipment-card-body"><span className="equipment-code">{item.internal_code}</span><h3>{item.designation}</h3><div className="equipment-card-tags"><span className={`complexity-tag ${item.complexity || "unclassified"}`}>{item.complexity === "simple" ? "Fonctionnement simple" : item.complexity === "complex" ? "Fonctionnement complexe" : "Complexité à définir"}</span>{item.data_verification !== "confirmed" && <span className="verification-tag">Fiche à vérifier</span>}</div><p>{[item.brand, item.model].filter(Boolean).join(" · ") || "Marque et modèle non renseignés"}</p><div className="equipment-card-meta"><span>{item.services?.name || "Service non renseigné"}</span><span>{item.locations?.name || "Emplacement non renseigné"}</span></div><div className="equipment-card-footer"><span>{item.next_maintenance_at ? `Maintenance : ${item.next_maintenance_at}` : "Maintenance non planifiée"}</span><span>Voir la fiche →</span></div></div>
     </Link>)}</div>}
   </>;
 }

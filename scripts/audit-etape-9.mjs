@@ -17,6 +17,8 @@ const required = [
   'supabase/migrations/202610150002_breakdown_workflow.sql',
   'supabase/migrations/202610150003_maintenance_management.sql',
   'supabase/migrations/202610150004_application_settings.sql',
+  'supabase/migrations/202610150008_security_hardening.sql',
+  'docs/ETAPE_9_SECURITE_ET_ACCES.md',
 ];
 for (const file of required) if (!fs.existsSync(path.join(root, file))) failures.push(`Fichier requis absent : ${file}`);
 
@@ -31,6 +33,10 @@ const access = fs.readFileSync(path.join(root, 'src/lib/supabase/access.ts'), 'u
 if (!access.includes('profile.is_active') || !access.includes('profile.role === "admin"')) failures.push('Vérifier le contrôle du statut actif et du rôle administrateur.');
 const invite = fs.readFileSync(path.join(root, 'src/app/api/admin/users/route.ts'), 'utf8');
 if (!invite.includes('SUPABASE_SERVICE_ROLE_KEY') || !invite.includes('profile.role !== "admin"')) failures.push('Vérifier la protection de l’API d’invitation et la clé serveur.');
+const stockPage = fs.readFileSync(path.join(root, 'src/app/stock/page.tsx'), 'utf8');
+if (stockPage.includes('profile.role === "biomedical_manager"')) failures.push('Un rôle historique non-admin dispose encore de contrôles d’écriture dans le stock.');
+const securityMigration = fs.readFileSync(path.join(root, 'supabase/migrations/202610150008_security_hardening.sql'), 'utf8');
+if (!securityMigration.includes('audit_profile_security_changes') || !securityMigration.includes('public.can_manage_biomedical()')) failures.push('Vérifier la migration de durcissement et la traçabilité des profils.');
 
 if (fs.existsSync(path.join(root, '.env.local'))) failures.push('.env.local présent dans le dossier livrable : ne pas distribuer.');
 if (!fs.existsSync(path.join(root, 'package-lock.json'))) warnings.push('package-lock.json absent : installation non verrouillée et non reproductible tant que le registre npm est inaccessible.');

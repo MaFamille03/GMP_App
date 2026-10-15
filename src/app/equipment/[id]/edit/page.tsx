@@ -7,7 +7,7 @@ export default async function EditEquipmentPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const { supabase } = await requireAdmin();
   const [{ data: equipment, error }, { data: services }, { data: locations }] = await Promise.all([
-    supabase.from("equipment").select("id,internal_code,designation,brand,model,manufacturer,serial_number,service_id,location_id,operational_status,criticality,acquisition_date,commissioning_date,acquisition_cost,theoretical_lifetime_years,next_maintenance_at,notes").eq("id", id).maybeSingle(),
+    supabase.from("equipment").select("id,internal_code,designation,brand,model,manufacturer,serial_number,service_id,location_id,operational_status,criticality,complexity,data_verification,verification_notes,acquisition_date,commissioning_date,acquisition_cost,theoretical_lifetime_years,next_maintenance_at,notes").eq("id", id).maybeSingle(),
     supabase.from("services").select("id,name").order("name"),
     supabase.from("locations").select("id,name").order("name"),
   ]);

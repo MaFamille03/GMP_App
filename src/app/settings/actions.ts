@@ -39,3 +39,30 @@ export async function setReferenceActive(f: FormData) {
   else throw new Error("Type de référence non autorisé.");
   ensure(!error,`Mise à jour impossible : ${error?.message}`); refresh("/settings","/equipment","/maintenance");
 }
+
+
+/** Updates an existing reference without deleting historical links to equipment or interventions. */
+export async function updateReference(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const kind = v(f, "kind");
+  const id = v(f, "id");
+  const name = v(f, "name");
+  ensure(["service", "location", "category", "vendor"].includes(kind) && id, "Référence invalide.");
+  ensure(name, "Le nom est obligatoire.");
+  let error: { message: string } | null = null;
+  if (kind === "service") {
+    ({ error } = await supabase.from("services").update({ name, code: opt(f,"code"), description: opt(f,"description") }).eq("id", id));
+  } else if (kind === "location") {
+    ({ error } = await supabase.from("locations").update({ name, location_type: v(f,"location_type") || "room", description: opt(f,"description") }).eq("id", id));
+  } else if (kind === "category") {
+    ({ error } = await supabase.from("equipment_categories").update({ name, description: opt(f,"description") }).eq("id", id));
+  } else if (kind === "vendor") {
+    const vendorType = v(f,"vendor_type") || "other";
+    ensure(["supplier", "maintenance_provider", "manufacturer", "other"].includes(vendorType), "Type de fournisseur invalide.");
+    ({ error } = await supabase.from("vendors").update({ name, vendor_type: vendorType, contact_name: opt(f,"contact_name"), phone: opt(f,"phone"), email: opt(f,"email"), address: opt(f,"address"), notes: opt(f,"notes") }).eq("id", id));
+  } else {
+    throw new Error("Type de référence non autorisé.");
+  }
+  ensure(!error, `Modification impossible : ${error?.message}. Vérifie notamment que le nom ou le code n'est pas déjà utilisé.`);
+  refresh("/settings", "/equipment", "/maintenance", "/stock", "/reports");
+}

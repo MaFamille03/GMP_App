@@ -9,7 +9,7 @@ export default async function EquipmentPage() {
   if (authError || !user) redirect("/login");
   const [{ data: profile }, { data: equipment, error }, { data: photos }] = await Promise.all([
     supabase.from("profiles").select("role,is_active").eq("id", user.id).maybeSingle(),
-    supabase.from("equipment").select("id,internal_code,designation,brand,model,operational_status,criticality,next_maintenance_at,services(name),locations(name)").order("designation").limit(2000),
+    supabase.from("equipment").select("id,internal_code,designation,brand,model,operational_status,criticality,complexity,data_verification,next_maintenance_at,services(name),locations(name)").order("designation").limit(2000),
     supabase.from("equipment_files").select("equipment_id,storage_path,created_at").eq("file_kind", "main_photo").order("created_at", { ascending: false }).limit(4000),
   ]);
   if (!profile || !profile.is_active) redirect("/access-disabled");

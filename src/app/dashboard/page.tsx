@@ -1,25 +1,41 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarClock, ClipboardList, ShieldCheck, Wrench, FileBarChart2, ArrowLeftRight, Users, Activity, AlertTriangle, Clock3, Settings } from "lucide-react";
+import {
+  Activity, AlertTriangle, ArrowRight, ArrowUpRight,
+  CalendarClock, CheckCircle2, ClipboardList, FileBarChart2, LayoutDashboard,
+  LifeBuoy, Package, Settings, ShieldCheck, Stethoscope, Users, Wrench,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/sign-out-button";
-import Link from "next/link";
 
-const OPEN_BREAKDOWN_STATUSES = ["new", "to_qualify", "assigned", "in_progress", "waiting_parts", "waiting_provider"];
+const OPEN_BREAKDOWN_STATUSES = ["new", "to_qualify", "assigned", "in_progress", "waiting_parts", "waiting_provider", "awaiting_validation"];
 const ACTIVE_ORDER_STATUSES = ["planned", "assigned", "in_progress", "waiting_parts", "waiting_provider", "awaiting_validation"];
-const money = (value: number) => `${value.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} FCFA`;
+const formatMoney = (value: number) => `${value.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} FCFA`;
+const formatDate = (value: string) => new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
+
+const navItems = [
+  { href: "/dashboard", label: "Vue d’ensemble", icon: LayoutDashboard },
+  { href: "/equipment", label: "Parc biomédical", icon: Stethoscope },
+  { href: "/breakdowns", label: "Pannes & interventions", icon: AlertTriangle },
+  { href: "/maintenance", label: "Maintenance", icon: CalendarClock },
+  { href: "/stock", label: "Pièces & stock", icon: Package },
+  { href: "/movements", label: "Mouvements", icon: Package },
+  { href: "/reports", label: "Rapports & statistiques", icon: FileBarChart2 },
+];
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("display_name, job_title, role, is_active").eq("id", user.id).maybeSingle();
+  const { data: profile } = await supabase.from("profiles").select("display_name,job_title,role,is_active").eq("id", user.id).maybeSingle();
   if (profile?.is_active === false) redirect("/access-disabled");
 
-  const [{ data: equipment, error: equipmentError }, { data: breakdowns, error: breakdownError }, { data: orders, error: orderError }] = await Promise.all([
-    supabase.from("equipment").select("id,operational_status,criticality,next_maintenance_at"),
-    supabase.from("breakdowns").select("id,status,priority,reported_at,cost_amount,resolved_at"),
-    supabase.from("work_orders").select("id,status,planned_start_at,next_due_date,estimated_cost,actual_cost,order_type")
+  const [{ data: equipment, error: equipmentError }, { data: breakdowns, error: breakdownError }, { data: orders, error: orderError }, { data: serviceRows }] = await Promise.all([
+    supabase.from("equipment").select("id,internal_code,designation,operational_status,criticality,next_maintenance_at,services(name)").order("designation").limit(3000),
+    supabase.from("breakdowns").select("id,status,priority,reported_at,cost_amount,resolved_at,equipment_id").order("reported_at", { ascending: false }).limit(1000),
+    supabase.from("work_orders").select("id,status,planned_start_at,next_due_date,estimated_cost,actual_cost,order_type").limit(2000),
+    supabase.from("services").select("id,name").order("name").limit(100),
   ]);
 
   const loadError = equipmentError || breakdownError || orderError;
@@ -34,7 +50,7 @@ export default async function DashboardPage() {
   const functional = equipmentRows.filter((item) => item.operational_status === "functional").length;
   const unavailable = equipmentRows.filter((item) => ["broken", "under_maintenance", "out_of_service"].includes(item.operational_status)).length;
   const openBreakdowns = breakdownRows.filter((item) => OPEN_BREAKDOWN_STATUSES.includes(item.status));
-  const criticalOpenBreakdowns = openBreakdowns.filter((item) => ["critical", "high"].includes(item.priority));
+  const criticalOpen = openBreakdowns.filter((item) => ["critical", "high"].includes(item.priority));
   const activeOrders = orderRows.filter((item) => ACTIVE_ORDER_STATUSES.includes(item.status));
   const overdueOrders = orderRows.filter((item) => item.next_due_date && item.next_due_date < todayKey && !["completed", "cancelled"].includes(item.status));
   const dueSoon = equipmentRows.filter((item) => item.next_maintenance_at && item.next_maintenance_at >= todayKey && item.next_maintenance_at <= sevenDayKey && item.operational_status !== "retired").length;
@@ -42,51 +58,100 @@ export default async function DashboardPage() {
   const displayName = profile?.display_name || user.user_metadata?.full_name || user.email || "Utilisateur";
   const jobTitle = profile?.job_title || user.user_metadata?.job_title || "Fonction non renseignée";
   const isAdmin = profile?.role === "admin";
+  const serviceCounts = (serviceRows || []).map((service) => ({
+    name: service.name,
+    count: equipmentRows.filter((item: any) => Array.isArray(item.services) ? item.services.some((s: any) => s.name === service.name) : item.services?.name === service.name).length,
+  })).filter((service) => service.count > 0).sort((a, b) => b.count - a.count).slice(0, 5);
+  const recentBreakdowns = openBreakdowns.slice(0, 5);
+  const statusLabels: Record<string, string> = {
+    new: "Nouvelle", to_qualify: "À qualifier", assigned: "Affectée", in_progress: "En cours",
+    waiting_parts: "Attente de pièces", waiting_provider: "Attente prestataire", awaiting_validation: "À vérifier",
+  };
+  const priorityLabels: Record<string, string> = { critical: "Critique", high: "Élevée", medium: "Normale", low: "Faible" };
 
   return (
-    <main className="dashboard-shell">
-      <header className="topbar">
-        <div className="brand"><div className="brand-mark">G</div><div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div></div>
-        <SignOutButton />
-      </header>
+    <div className="gmp-app-layout">
+      <aside className="gmp-sidebar">
+        <Link href="/dashboard" className="gmp-brand">
+          <span className="gmp-brand-mark">G</span>
+          <span className="gmp-brand-copy"><strong>GMP</strong><small>PARC BIOMÉDICAL</small></span>
+        </Link>
+        <div className="gmp-sidebar-label">ESPACE DE TRAVAIL</div>
+        <nav className="gmp-nav" aria-label="Navigation principale">
+          {navItems.map(({ href, label, icon: Icon }, index) => (
+            <Link key={href} href={href} className={`gmp-nav-link ${index === 0 ? "is-active" : ""}`}>
+              <Icon size={18} strokeWidth={1.8} /><span>{label}</span>{index === 2 && openBreakdowns.length > 0 ? <b>{openBreakdowns.length}</b> : null}
+            </Link>
+          ))}
+        </nav>
+        <div className="gmp-sidebar-spacer" />
+        {isAdmin && <Link href="/users" className="gmp-nav-link"><Users size={18} strokeWidth={1.8}/><span>Utilisateurs</span></Link>}
+        <Link href="/settings" className="gmp-nav-link"><Settings size={18} strokeWidth={1.8}/><span>Paramètres</span></Link>
+        <div className="gmp-sidebar-help"><div className="gmp-help-icon"><LifeBuoy size={18}/></div><strong>Suivi du parc</strong><p>Centralisez les opérations et gardez une trace de chaque intervention.</p><Link href="/reports">Consulter les rapports <ArrowRight size={14}/></Link></div>
+        <div className="gmp-sidebar-user">
+          <div className="gmp-user-avatar">{displayName.trim().charAt(0).toUpperCase() || "G"}</div>
+          <div className="gmp-user-info"><strong>{displayName}</strong><span>{isAdmin ? "Administrateur-technicien" : "Observateur"}</span></div>
+          <SignOutButton compact />
+        </div>
+      </aside>
 
-      <section className="dashboard-welcome">
-        <p className="eyebrow">TABLEAU DE BORD · PILOTAGE DU PARC</p>
-        <h1>Bonjour, {displayName.split(" ")[0]}</h1>
-        <p>Vue d’ensemble du parc biomédical, des pannes et des opérations de maintenance du Groupe Médical du Plateau.</p>
-      </section>
+      <main className="gmp-main-content">
+        <header className="gmp-topbar">
+          <div><p className="gmp-breadcrumb">GMP <span>/</span> Vue d’ensemble</p><p className="gmp-topbar-subtitle">Polyclinique Groupe Médical du Plateau</p></div>
+          <div className="gmp-topbar-actions"><span className="gmp-secure-indicator"><ShieldCheck size={15}/> Espace sécurisé</span><span className={`gmp-role-chip ${isAdmin ? "admin" : ""}`}>{isAdmin ? "Administrateur" : "Observateur"}</span></div>
+        </header>
 
-      <section className="profile-summary">
-        <div className="profile-avatar">{displayName.trim().charAt(0).toUpperCase() || "G"}</div>
-        <div className="profile-data"><strong>{displayName}</strong><span>{jobTitle}</span><span className="profile-email">{user.email}</span></div>
-        <span className={`role-pill ${isAdmin ? "role-pill-admin" : ""}`}>{isAdmin ? "Administrateur-technicien" : "Observateur"}</span>
-      </section>
+        <section className="gmp-page-intro">
+          <div><p className="gmp-overline">PILOTAGE BIOMÉDICAL</p><h1>Vue d’ensemble</h1><p>Bonjour {displayName.split(" ")[0]}, voici la situation actuelle du parc et les opérations à suivre.</p></div>
+          {isAdmin && <Link href="/equipment/new" className="gmp-primary-action"><span>+</span> Ajouter un équipement</Link>}
+        </section>
 
-      {!profile && <div className="form-alert form-alert-error">Le compte est connecté, mais sa fiche profil n’a pas été trouvée. Vérifie les migrations et la configuration des profils.</div>}
-      {loadError && <div className="form-alert form-alert-error">Les indicateurs n’ont pas tous pu être chargés. Vérifie les migrations Supabase et les politiques RLS. {loadError.message}</div>}
+        {!profile && <div className="form-alert form-alert-error">Le compte est connecté, mais sa fiche profil est introuvable. Vérifie les migrations Supabase.</div>}
+        {loadError && <div className="form-alert form-alert-error">Certains indicateurs n’ont pas pu être chargés. Vérifie les migrations et les politiques RLS. {loadError.message}</div>}
 
-      <div className="section-heading dashboard-heading"><div><p className="eyebrow">INDICATEURS DU PARC</p><h2>Situation actuelle</h2></div><Link href="/reports" className="secondary-button">Voir les rapports</Link></div>
-      <section className="report-kpis dashboard-kpis">
-        <article><span><Activity size={16} /> Équipements recensés</span><strong>{equipmentRows.length}</strong><small>{functional} fonctionnels · {unavailable} indisponibles</small></article>
-        <article><span><AlertTriangle size={16} /> Pannes ouvertes</span><strong>{openBreakdowns.length}</strong><small>{criticalOpenBreakdowns.length} prioritaires ou critiques</small></article>
-        <article><span><Clock3 size={16} /> Ordres en cours</span><strong>{activeOrders.length}</strong><small>{overdueOrders.length} échéances dépassées</small></article>
-        <article><span><CalendarClock size={16} /> Entretiens à venir</span><strong>{dueSoon}</strong><small>Maintenance prévue dans les 7 prochains jours</small></article>
-      </section>
-      <section className="dashboard-financial-strip"><div><span>Coûts enregistrés (cumul des montants saisis)</span><strong>{money(totalCosts)}</strong></div><div><span>Taux fonctionnel indicatif</span><strong>{equipmentRows.length ? `${Math.round((functional / equipmentRows.length) * 100)} %` : "—"}</strong></div><p>Indicateurs calculés à partir des données accessibles. Ils ne remplacent pas un inventaire vérifié ni une comptabilité exhaustive.</p></section>
+        <section className="gmp-kpi-grid" aria-label="Indicateurs du parc">
+          <article className="gmp-kpi-card"><div className="gmp-kpi-top"><span>Équipements recensés</span><span className="gmp-kpi-icon blue"><Stethoscope size={18}/></span></div><strong>{equipmentRows.length}</strong><div className="gmp-kpi-foot"><span>{functional} fonctionnels</span><span className="gmp-dot-separator"/><span>{unavailable} hors service</span></div></article>
+          <article className="gmp-kpi-card"><div className="gmp-kpi-top"><span>Pannes ouvertes</span><span className="gmp-kpi-icon red"><AlertTriangle size={18}/></span></div><strong>{openBreakdowns.length}</strong><div className="gmp-kpi-foot"><span className={criticalOpen.length ? "gmp-text-danger" : ""}>{criticalOpen.length} priorité haute ou critique</span></div></article>
+          <article className="gmp-kpi-card"><div className="gmp-kpi-top"><span>Maintenances actives</span><span className="gmp-kpi-icon amber"><Wrench size={18}/></span></div><strong>{activeOrders.length}</strong><div className="gmp-kpi-foot"><span>{overdueOrders.length} échéance(s) dépassée(s)</span></div></article>
+          <article className="gmp-kpi-card"><div className="gmp-kpi-top"><span>À entretenir sous 7 jours</span><span className="gmp-kpi-icon green"><CalendarClock size={18}/></span></div><strong>{dueSoon}</strong><div className="gmp-kpi-foot"><span>Échéances préventives à venir</span></div></article>
+        </section>
 
-      <div className="section-heading dashboard-heading"><div><p className="eyebrow">ACCÈS AUX MODULES</p><h2>Gestion du parc biomédical</h2></div><span className="phase-tag">{isAdmin ? "Accès administrateur" : "Lecture seule"}</span></div>
-      <section className="pillar-grid">
-        {isAdmin && <Link href="/users" className="pillar-card dashboard-module-link"><div className="pillar-icon"><Users size={22} /></div><h3>Accès utilisateurs</h3><p>Consulter les comptes et activer ou désactiver les accès observateurs.</p><span className="coming-soon">Gérer les accès ↗</span></Link>}
-        <Link href="/settings" className="pillar-card dashboard-module-link"><div className="pillar-icon"><Settings size={22} /></div><h3>Paramètres</h3><p>Informations de la polyclinique, services, emplacements, catégories et prestataires.</p><span className="coming-soon">Configurer le site ↗</span></Link>
-        <Link href="/equipment" className="pillar-card dashboard-module-link"><div className="pillar-icon"><ClipboardList size={22} /></div><h3>Inventaire biomédical</h3><p>Registre des équipements, photos, fiches techniques et emplacements.</p><span className="coming-soon">Ouvrir le registre ↗</span></Link>
-        <Link href="/breakdowns" className="pillar-card dashboard-module-link"><div className="pillar-icon"><Wrench size={22} /></div><h3>Pannes et interventions</h3><p>Signalements, diagnostics, interventions internes ou externes et validation de remise en service.</p><span className="coming-soon">Ouvrir les pannes ↗</span></Link>
-        <Link href="/maintenance" className="pillar-card dashboard-module-link"><div className="pillar-icon"><CalendarClock size={22} /></div><h3>Maintenance préventive</h3><p>Plans périodiques, ordres de travail et suivi des échéances.</p><span className="coming-soon">Ouvrir la maintenance ↗</span></Link>
-        <Link href="/movements" className="pillar-card dashboard-module-link"><div className="pillar-icon"><ArrowLeftRight size={22} /></div><h3>Mouvements des équipements</h3><p>Transferts entre services et emplacements, avec historique et motif de déplacement.</p><span className="coming-soon">Ouvrir les mouvements ↗</span></Link>
-        <Link href="/reports" className="pillar-card dashboard-module-link"><div className="pillar-icon"><FileBarChart2 size={22} /></div><h3>Rapports et indicateurs</h3><p>Exports d’inventaire, pannes, ordres de travail et coûts enregistrés pour Excel.</p><span className="coming-soon">Consulter les rapports ↗</span></Link>
-      </section>
+        <section className="gmp-main-grid">
+          <article className="gmp-panel gmp-breakdowns-panel">
+            <div className="gmp-panel-heading"><div><h2>Pannes à suivre</h2><p>Les dossiers ouverts nécessitant un suivi</p></div><Link href="/breakdowns" className="gmp-text-link">Voir toutes <ArrowRight size={15}/></Link></div>
+            {recentBreakdowns.length ? <div className="gmp-table-wrap"><table className="gmp-data-table"><thead><tr><th>Dossier</th><th>Priorité</th><th>Statut</th><th>Signalée le</th></tr></thead><tbody>{recentBreakdowns.map((item) => <tr key={item.id}><td><Link href={`/breakdowns/${item.id}`} className="gmp-record-link">PAN-{item.id.slice(0, 6).toUpperCase()}</Link><small>{equipmentRows.find((eq: any) => eq.id === item.equipment_id)?.designation || "Équipement à identifier"}</small></td><td><span className={`gmp-priority ${item.priority === "critical" ? "critical" : item.priority === "high" ? "high" : "normal"}`}><i/>{priorityLabels[item.priority] || item.priority || "Normale"}</span></td><td><span className="gmp-status-label">{statusLabels[item.status] || item.status}</span></td><td className="gmp-date-cell">{item.reported_at ? formatDate(item.reported_at) : "—"}</td></tr>)}</tbody></table></div> : <div className="gmp-empty-state"><span><CheckCircle2 size={22}/></span><strong>Aucune panne ouverte</strong><p>Les dossiers actifs apparaîtront ici pour faciliter le suivi.</p></div>}
+            <div className="gmp-panel-bottom"><span>{openBreakdowns.length} dossier(s) ouvert(s)</span><Link href="/breakdowns">Ouvrir le registre <ArrowRight size={14}/></Link></div>
+          </article>
 
-      <div className="security-note"><ShieldCheck size={19} /><p><strong>Accès sécurisé.</strong> La fonction déclarée dans le profil ne confère pas de droits d’administration. Les opérations de modification sont réservées au compte autorisé.</p></div>
-      <footer className="footer"><span>GMP · Parc biomédical</span><span>GMP · Version cumulative — Étape 7</span></footer>
-    </main>
+          <article className="gmp-panel gmp-availability-panel">
+            <div className="gmp-panel-heading"><div><h2>Disponibilité du parc</h2><p>État opérationnel des équipements</p></div><Activity size={19} className="gmp-muted-icon"/></div>
+            <div className="gmp-availability-number"><strong>{equipmentRows.length ? Math.round(functional / equipmentRows.length * 100) : 0}<small>%</small></strong><span>Taux de fonctionnement</span></div>
+            <div className="gmp-progress-track"><span style={{ width: `${equipmentRows.length ? functional / equipmentRows.length * 100 : 0}%` }}/></div>
+            <div className="gmp-legend-row"><span><i className="green"/> Fonctionnels</span><strong>{functional}</strong></div>
+            <div className="gmp-legend-row"><span><i className="red"/> Hors service / indisponibles</span><strong>{unavailable}</strong></div>
+            <div className="gmp-legend-row"><span><i className="gray"/> Autres statuts</span><strong>{Math.max(0, equipmentRows.length - functional - unavailable)}</strong></div>
+            <div className="gmp-availability-note"><ShieldCheck size={16}/><span>Indicateur calculé à partir des statuts enregistrés dans l’inventaire.</span></div>
+          </article>
+        </section>
+
+        <section className="gmp-lower-grid">
+          <article className="gmp-panel"><div className="gmp-panel-heading"><div><h2>Répartition par service</h2><p>Équipements enregistrés dans les services</p></div><Link href="/equipment" className="gmp-icon-link" aria-label="Ouvrir l’inventaire"><ArrowUpRight size={17}/></Link></div>
+            {serviceCounts.length ? <div className="gmp-service-list">{serviceCounts.map((service, index) => <div className="gmp-service-row" key={service.name}><span className={`gmp-service-marker marker-${index + 1}`}/><span className="gmp-service-name">{service.name}</span><div className="gmp-service-bar"><span style={{ width: `${Math.max(6, service.count / Math.max(...serviceCounts.map((s) => s.count)) * 100)}%` }}/></div><strong>{service.count}</strong></div>)}</div> : <div className="gmp-small-empty">Les statistiques par service s’afficheront après la saisie de l’inventaire.</div>}
+          </article>
+          <article className="gmp-panel gmp-actions-panel"><div className="gmp-panel-heading"><div><h2>Accès rapides</h2><p>Les tâches les plus courantes</p></div></div>
+            <div className="gmp-quick-links">
+              <Link href="/equipment" className="gmp-quick-link"><span className="gmp-quick-icon blue"><ClipboardList size={18}/></span><span><strong>Consulter l’inventaire</strong><small>Fiches et états des équipements</small></span><ArrowRight size={16}/></Link>
+              {isAdmin && <Link href="/breakdowns/new" className="gmp-quick-link"><span className="gmp-quick-icon red"><AlertTriangle size={18}/></span><span><strong>Enregistrer une panne</strong><small>Créer un dossier de diagnostic</small></span><ArrowRight size={16}/></Link>}
+              <Link href="/maintenance" className="gmp-quick-link"><span className="gmp-quick-icon amber"><CalendarClock size={18}/></span><span><strong>Suivre la maintenance</strong><small>Échéances et ordres de travail</small></span><ArrowRight size={16}/></Link>
+              <Link href="/stock" className="gmp-quick-link"><span className="gmp-quick-icon green"><Package size={18}/></span><span><strong>Pièces détachées & stock</strong><small>Disponibilités et consommations</small></span><ArrowRight size={16}/></Link>
+              <Link href="/reports" className="gmp-quick-link"><span className="gmp-quick-icon green"><FileBarChart2 size={18}/></span><span><strong>Consulter les rapports</strong><small>Bilans et données de suivi</small></span><ArrowRight size={16}/></Link>
+            </div>
+          </article>
+        </section>
+
+        <section className="gmp-summary-strip"><div className="gmp-summary-icon"><Activity size={19}/></div><div><strong>Suivi financier des opérations</strong><p>Montants cumulés renseignés dans les dossiers de panne et de maintenance.</p></div><strong className="gmp-summary-amount">{formatMoney(totalCosts)}</strong><Link href="/reports" className="gmp-summary-link">Détails <ArrowRight size={14}/></Link></section>
+        <footer className="gmp-footer"><span>GMP · Gestion du parc biomédical</span><span><ShieldCheck size={13}/> Données visibles selon les droits du compte</span></footer>
+      </main>
+    </div>
   );
 }

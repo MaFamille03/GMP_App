@@ -1,2 +1,9 @@
-import {redirect} from 'next/navigation';import Link from 'next/link';import {createClient} from '@/lib/supabase/server';import {EquipmentCreateForm} from '@/components/equipment-create-form';
-export default async function NewEquipmentPage(){const supabase=await createClient();const {data:{user},error}=await supabase.auth.getUser();if(error||!user)redirect('/login');const [{data:services},{data:locations}]=await Promise.all([supabase.from('services').select('id,name').order('name'),supabase.from('locations').select('id,name').order('name')]);return <main className="dashboard-shell"><header className="topbar"><Link className="brand" href="/dashboard"><div className="brand-mark">G</div><div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div></Link><Link className="secondary-button" href="/equipment">Retour à l’inventaire</Link></header><section className="dashboard-welcome"><p className="eyebrow">INVENTAIRE · NOUVEAU</p><h1>Enregistrer un équipement</h1><p>Renseigne les informations d’identification, l’affectation et le cycle de vie.</p></section><EquipmentCreateForm services={services||[]} locations={locations||[]}/></main>}
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+/** Point d'entrée : envoie les utilisateurs vers leur espace ou la connexion. */
+export default async function HomePage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  redirect(user ? "/dashboard" : "/login");
+}
