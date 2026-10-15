@@ -49,7 +49,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           router.refresh();
         } else {
           setSuccessMessage(
-            "Inscription enregistrée. Consulte ta boîte e-mail pour confirmer ton adresse avant de te connecter. Si aucun e-mail n'arrive, vérifie les paramètres d'authentification du projet Supabase."
+            "Inscription enregistrée. Consulte ta boîte e-mail pour confirmer ton adresse avant de te connecter."
           );
         }
       } else {
