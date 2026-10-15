@@ -79,7 +79,7 @@ export default async function DashboardPage() {
       <aside className="gmp-sidebar">
         <Link href="/dashboard" className="gmp-brand" aria-label="GMP Polyclinique — Vue d’ensemble">
           <span className="gmp-brand-logo"><Image src="/images/gmp-polyclinique-logo.png" alt="Logo GMP Polyclinique" width={384} height={178} priority /></span>
-          <span className="gmp-brand-copy"><strong>GMP</strong><small>PARC BIOMÉDICAL</small></span>
+          <span className="gmp-brand-copy"><small>PARC BIOMÉDICAL</small></span>
         </Link>
         <div className="gmp-sidebar-label">ESPACE DE TRAVAIL</div>
         <nav className="gmp-nav" aria-label="Navigation principale">
