@@ -1,82 +1,122 @@
 .registerLayout {
-  background: #f7f9f9;
+  min-height: 100svh;
+  height: 100svh;
+  overflow: hidden;
+  grid-template-columns: minmax(0, 1fr) minmax(460px, .92fr);
+  background: #f5f8f8;
 }
 
 .registerSide {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   gap: 0;
-  padding: clamp(28px, 4vw, 56px) clamp(28px, 4vw, 68px);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: clamp(26px, 3.7vw, 58px);
+  isolation: isolate;
+  background: linear-gradient(110deg, rgba(246, 251, 251, .94) 0%, rgba(244, 250, 251, .82) 42%, rgba(14, 130, 145, .10) 100%), url('/images/gmp-medical-background.jpg') center / cover no-repeat;
 }
 
-/* Le panneau et l’image partagent exactement le même blanc : aucun cadre
-   ou halo gris ne vient concurrencer le logo officiel. */
+.registerSide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(235,247,248,.20));
+  pointer-events: none;
+}
+
+/* Le JPEG du logo contient du blanc : le panneau utilise exactement le même blanc,
+   sans bordure ni ombre marquée, afin que seul le logo semble apparaître. */
 .brandPanel {
-  width: min(100%, 430px) !important;
-  min-height: 170px !important;
-  padding: 20px 30px !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: min(100%, 390px) !important;
+  min-height: 142px !important;
+  padding: 12px 22px !important;
   background: #fff !important;
   border: 0 !important;
-  border-radius: 18px !important;
-  box-shadow: 0 14px 36px rgba(22, 68, 74, 0.10) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 8px 28px rgba(25, 75, 83, .07) !important;
 }
 
 .logo {
+  display: block;
   width: 100% !important;
-  max-width: 370px !important;
-  max-height: 145px !important;
+  max-width: 350px !important;
+  max-height: 124px !important;
   object-fit: contain;
   background: #fff;
 }
 
 .sideCopy {
-  max-width: 520px !important;
-  padding-top: clamp(24px, 4vh, 42px) !important;
-  padding-bottom: 20px !important;
+  max-width: 540px !important;
+  padding-top: clamp(22px, 3.2vh, 34px) !important;
+  padding-bottom: 12px !important;
 }
 
 .sideCopy h2 {
-  max-width: 500px;
+  max-width: 530px;
+  color: #14343d;
+  text-shadow: 0 1px 8px rgba(255,255,255,.5);
+}
+
+.sideCopy > p:last-child {
+  max-width: 450px;
+  color: #34545d;
+  text-shadow: 0 1px 8px rgba(255,255,255,.5);
 }
 
 .featureList {
   display: grid;
-  gap: 11px;
-  margin: 24px 0 0;
+  gap: 14px;
+  margin: 22px 0 0;
   padding: 0;
   list-style: none;
-  color: #244f55;
+  color: #163c45;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .featureList li {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
 }
 
 .featureList li span {
   display: inline-grid;
-  flex: 0 0 22px;
-  width: 22px;
-  height: 22px;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
   place-items: center;
-  border-radius: 50%;
-  color: #087985;
-  background: rgba(255, 255, 255, 0.88);
-  font-size: 12px;
+  border-radius: 10px;
+  color: #078594;
+  background: rgba(224, 245, 246, .96);
+  font-size: 15px;
   font-weight: 800;
 }
 
 .sideFooter {
   margin-top: auto;
-  padding-top: 18px;
+  padding-top: 14px;
+  color: #fff !important;
+  font-weight: 700;
+  text-shadow: 0 1px 8px rgba(10, 55, 65, .65);
 }
 
 .registerMain {
-  background: #f7f9f9;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 30px clamp(28px, 5vw, 76px);
+  background: #f5f8f8;
 }
 
 .formHeading {
@@ -91,7 +131,7 @@
   color: #527178;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.13em;
+  letter-spacing: .13em;
 }
 
 .secureLabel::before {
@@ -100,11 +140,11 @@
   border-radius: 50%;
   background: #168d9a;
   box-shadow: 0 0 0 4px #e3f2f2;
-  content: "";
+  content: '';
 }
 
 .privacyNote {
-  margin: 18px 0 0;
+  margin: 16px 0 0;
   color: #7b8b8f;
   font-size: 11px;
   line-height: 1.6;
@@ -112,31 +152,46 @@
 }
 
 @media (max-width: 900px) {
+  .registerLayout {
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+    grid-template-columns: 1fr;
+  }
+
   .registerSide {
+    min-height: 0;
     padding: 24px clamp(20px, 5vw, 40px) !important;
+    background-position: center 42%;
   }
 
   .brandPanel {
-    width: min(100%, 340px) !important;
-    min-height: 125px !important;
-    padding: 15px 24px !important;
+    width: min(100%, 330px) !important;
+    min-height: 108px !important;
+    padding: 10px 18px !important;
   }
 
   .logo {
-    max-height: 110px !important;
+    max-height: 92px !important;
   }
 
   .sideCopy {
-    padding-top: 22px !important;
+    padding-top: 20px !important;
+    padding-bottom: 8px !important;
   }
 
   .featureList {
-    gap: 8px;
-    margin-top: 16px;
+    gap: 9px;
+    margin-top: 15px;
   }
 
   .sideFooter {
     display: none;
+  }
+
+  .registerMain {
+    padding: 30px 22px 36px;
+    overflow: visible;
   }
 
   .secureLabel {
@@ -146,13 +201,13 @@
 
 @media (max-width: 480px) {
   .brandPanel {
-    min-height: 105px !important;
-    padding: 12px 20px !important;
-    border-radius: 14px !important;
+    min-height: 96px !important;
+    padding: 9px 16px !important;
+    border-radius: 12px !important;
   }
 
   .logo {
-    max-height: 90px !important;
+    max-height: 80px !important;
   }
 
   .featureList {

@@ -1,6 +1,12 @@
 import { AuthForm } from "@/components/auth-form";
 import styles from "./register-page.module.css";
 
+const features = [
+  "Parc d’équipements — inventaire complet et à jour",
+  "Maintenance et interventions — planification et suivi simplifiés",
+  "Rapports et traçabilité — pour une meilleure performance",
+];
+
 export default function RegisterPage() {
   return (
     <main className={`auth-layout auth-layout-premium ${styles.registerLayout}`}>
@@ -20,12 +26,12 @@ export default function RegisterPage() {
           <h2>Un suivi biomédical fiable, au service des soins.</h2>
           <p>
             Centralisez les équipements, les maintenances et les interventions
-            techniques dans un espace professionnel, clair et sécurisé.
+            techniques dans un espace professionnel et sécurisé.
           </p>
           <ul className={styles.featureList} aria-label="Fonctionnalités de la plateforme">
-            <li><span aria-hidden="true">✓</span> Inventaire des équipements</li>
-            <li><span aria-hidden="true">✓</span> Suivi des pannes et maintenances</li>
-            <li><span aria-hidden="true">✓</span> Historique des interventions</li>
+            <li><span aria-hidden="true">▦</span><div><strong>Parc d’équipements</strong><br />Inventaire complet et à jour</div></li>
+            <li><span aria-hidden="true">⌁</span><div><strong>Maintenance et interventions</strong><br />Planification et suivi simplifiés</div></li>
+            <li><span aria-hidden="true">▥</span><div><strong>Rapports et traçabilité</strong><br />Pour une meilleure performance</div></li>
           </ul>
         </div>
 
@@ -36,7 +42,6 @@ export default function RegisterPage() {
 
       <section className={`auth-main auth-main-premium ${styles.registerMain}`}>
         <div className={styles.formHeading}>
-          <span className={styles.secureLabel}>ESPACE PROFESSIONNEL SÉCURISÉ</span>
           <AuthForm mode="register" />
           <p className={styles.privacyNote}>
             Les informations de compte sont utilisées pour identifier l’utilisateur
