@@ -18,9 +18,9 @@ export default async function ReportsPage(){
  ]);
  const loadError=eqError||breakError||ordersError||interventionError;
  return <main className="dashboard-shell"><header className="topbar"><Link className="brand" href="/dashboard"><div className="brand-mark">G</div><div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div></Link><Link className="secondary-button" href="/dashboard">Retour au tableau de bord</Link></header>
- <section className="dashboard-welcome"><p className="eyebrow">ÉTAPE 7 · PILOTAGE</p><h1>Rapports et indicateurs</h1><p>Vue synthétique de l’inventaire, des pannes, des échéances et des coûts enregistrés. Les exports sont disponibles au format CSV.</p></section>
+ <section className="dashboard-welcome"><p className="eyebrow">ÉTAPE 6 · PILOTAGE</p><h1>Rapports et indicateurs</h1><p>Vue synthétique de l’inventaire, des pannes, des échéances et des coûts enregistrés. Les exports sont disponibles au format CSV.</p></section>
  <section className="pillar-card report-intro"><div className="pillar-icon"><FileBarChart2 size={24}/></div><div><h3>Rapports opérationnels GMP</h3><p>Utilise les filtres de période, imprime le rapport ou exporte les tableaux pour Excel.</p></div></section>
  {loadError&&<div className="form-alert form-alert-error">Une partie des données n’a pas pu être chargée. Vérifie les migrations et les politiques RLS Supabase. {loadError.message}</div>}
  <ReportsWorkspace equipment={equipment||[]} breakdowns={breakdowns||[]} orders={orders||[]} interventions={interventions||[]}/>
- <footer className="footer"><span>GMP · Parc biomédical</span><span>Étape 7 — Rapports et indicateurs</span></footer></main>;
+ <footer className="footer"><span>GMP · Parc biomédical</span><span>Étape 6 — Rapports et indicateurs</span></footer></main>;
 }

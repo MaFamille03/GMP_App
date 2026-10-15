@@ -1,49 +1,54 @@
-# GMP — Étape 2 : configuration Auth
+# GMP — Étape 2 : authentification et contrôle des accès
 
-## Migration
+## 1. Appliquer les migrations
 
-Dans Supabase > SQL Editor, exécuter `migrations/202610140002_auth_profiles.sql` après la migration initiale de l'étape 1.
+Dans Supabase > SQL Editor, appliquer dans l'ordre :
+1. `migrations/202610140001_initial_schema.sql`
+2. `migrations/202610140002_auth_profiles.sql`
+3. `migrations/202610140009_equipment_movements_rpc.sql`
+4. `migrations/202610150001_two_level_access.sql`
 
-Cette migration :
-- ajoute `job_title` au profil ;
-- crée automatiquement une fiche profil à l'inscription ;
-- préserve la fonction déclarée séparément du rôle système ;
-- réserve les permissions de gestion à `role = admin` ;
-- ne crée et ne promeut aucun administrateur automatiquement.
+Ne pas relancer une migration de création initiale sans vérifier son impact sur une base déjà utilisée.
 
-## Authentification Supabase
+## 2. Deux niveaux d'accès
+
+- **Administrateur-technicien (`role = admin`)** : seul rôle pouvant modifier les données biomédicales et gérer les accès.
+- **Observateur** : tout compte actif dont le rôle n'est pas `admin`, quelle que soit sa fonction déclarée. Il peut consulter les données et les documents autorisés, mais ne peut pas créer, modifier ou supprimer les données métier.
+
+Les anciens rôles enum (`service_manager`, `management`, etc.) sont conservés pour compatibilité du schéma, mais ils sont tous traités comme observateurs. La fonction professionnelle (`job_title`) ne confère aucun droit.
+
+## 3. Configurer Supabase Auth
 
 Dans Supabase > Authentication > URL Configuration :
-- Site URL en local : `http://localhost:3000`
-- Redirect URL en local : `http://localhost:3000/auth/callback`
-- Ajouter aussi l'URL de production Vercel et son callback `/auth/callback`.
+- Site URL : URL de production de l'application.
+- Redirect URL : ajouter `http://localhost:3000/auth/callback` en développement et `https://VOTRE-DOMAINE/auth/callback` en production.
+- Vérifier le fournisseur e-mail et la configuration d'envoi d'invitations.
 
-Dans Authentication > Sign In / Providers, activer Email si c'est le fournisseur retenu par le GMP. Choisir explicitement si la confirmation d'adresse e-mail est obligatoire.
+L’inscription publique est désactivée dans l’interface. Désactiver également « Allow new users to sign up » dans Supabase Authentication > Settings, sinon un utilisateur pourrait tenter de s’inscrire directement via l’API Supabase. Les nouveaux comptes sont invités depuis `/users` par l’administrateur.
 
-## Variables locales
+## 4. Variables d'environnement
 
-Créer `.env.local` à partir de `.env.example` et remplir :
+Dans `.env.local` et dans Vercel > Settings > Environment Variables :
 - `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (ou la clé publishable du projet)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (ou clé publishable)
+- `SUPABASE_SERVICE_ROLE_KEY` — **serveur uniquement**, nécessaire à l'envoi d'invitations depuis `/users`.
 
-Ne jamais mettre une clé `service_role` dans une variable `NEXT_PUBLIC_*`, dans GitHub ou dans le navigateur.
+La clé service role ne doit jamais être utilisée dans un composant client, une variable `NEXT_PUBLIC_*`, un dépôt Git ou un document partagé. Si elle a déjà été exposée, la révoquer et en générer une nouvelle.
 
-## Premier administrateur
+## 5. Premier administrateur
 
-1. Inscrire la personne qui doit administrer l'application via `/register`.
-2. Confirmer son e-mail si nécessaire.
-3. Ouvrir `first_admin_setup.sql`, remplacer `REMPLACER_PAR_EMAIL_ADMIN` par l'adresse exacte, puis exécuter le script dans le SQL Editor du bon projet.
-4. Vérifier la ligne retournée : `role` doit être `admin`.
-5. Garder cette procédure sous le contrôle d'une personne autorisée à administrer Supabase.
+1. Créer le compte de l'administrateur depuis Supabase Authentication (ou via une procédure d'invitation approuvée).
+2. Confirmer le compte si la confirmation est activée.
+3. Dans `first_admin_setup.sql`, remplacer `REMPLACER_PAR_EMAIL_ADMIN` par l'adresse exacte puis exécuter le script dans le projet GMP.
+4. Vérifier que `profiles.role = 'admin'` pour ce compte.
 
-Le formulaire d'inscription ne propose jamais le rôle administrateur. Les autres personnes choisissent librement leur fonction déclarative, mais restent des utilisateurs standards du point de vue des permissions.
+Ne jamais donner le rôle admin en se basant uniquement sur la fonction professionnelle saisie dans un formulaire.
 
-## Routes
+## 6. Vérifications obligatoires
 
-- `/login` : connexion
-- `/register` : inscription
-- `/dashboard` : espace protégé par middleware
+Tester avec deux comptes distincts :
+- Administrateur : peut inviter un utilisateur, activer/désactiver un compte et modifier les données métier.
+- Observateur : peut consulter les données mais les écritures directes doivent être rejetées par RLS ; `/equipment/new`, `/breakdowns/new` et `/users` ne doivent pas être accessibles comme pages de modification.
+- Compte désactivé : doit être redirigé vers `/access-disabled`.
 
-## Limites de cette étape
-
-Le dashboard est un écran d'accueil d'authentification, pas encore le tableau de bord biomédical réel. Les formulaires de gestion des utilisateurs et la matrice de permissions détaillée par service seront renforcés dans les étapes suivantes.
+La sécurité ne doit pas reposer uniquement sur le masquage des boutons : les politiques RLS et le contrôle serveur doivent rester actifs.

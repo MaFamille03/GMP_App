@@ -33,7 +33,7 @@ function formatSize(size: number | null) {
   return size < 1024 * 1024 ? `${Math.max(1, Math.round(size / 1024))} Ko` : `${(size / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
-export function EquipmentFilesManager({ equipmentId }: { equipmentId: string }) {
+export function EquipmentFilesManager({ equipmentId, canManage = false }: { equipmentId: string; canManage?: boolean }) {
   const supabase = createClient();
   const [files, setFiles] = useState<EquipmentFile[]>([]);
   const [urls, setUrls] = useState<Record<string, string>>({});
@@ -126,18 +126,18 @@ export function EquipmentFilesManager({ equipmentId }: { equipmentId: string }) 
   return <section className="maintenance-list equipment-files-section">
     <div className="section-heading"><div><p className="eyebrow">DOSSIER DOCUMENTAIRE</p><h2>Photos et documents</h2></div><span className="phase-tag">{files.length} fichier(s)</span></div>
     <p className="muted-copy">Ajoute les photos de l’appareil, la plaque signalétique, les manuels, certificats, factures et rapports de maintenance. Formats acceptés : JPG, PNG, WEBP et PDF (15 Mo maximum par fichier).</p>
-    <form className="equipment-file-form" onSubmit={uploadFile}>
+    {canManage ? <form className="equipment-file-form" onSubmit={uploadFile}>
       <label>Type de fichier<select value={kind} onChange={(e) => setKind(e.target.value)}>{KINDS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
       <label>Fichier<input id={`equipment-file-${equipmentId}`} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(e) => setSelected(e.target.files?.[0] || null)} required /></label>
       <label className="file-caption-field">Légende / précision (facultatif)<input value={caption} onChange={(e) => setCaption(e.target.value)} maxLength={250} placeholder="Ex. Plaque signalétique côté arrière" /></label>
       <button className="primary-button" type="submit" disabled={uploading}>{uploading ? "Envoi en cours…" : "Ajouter le fichier"}</button>
-    </form>
+    </form> : <p className="security-note">Consultation des photos et documents en lecture seule.</p>}
     {error && <div className="form-alert form-alert-error" role="alert">{error}</div>}
     {message && <div className="form-alert form-alert-success" role="status">{message}</div>}
     {loading ? <p className="empty-state">Chargement des fichiers…</p> : files.length === 0 ? <p className="empty-state">Aucune photo ni document pour cet équipement.</p> : <div className="equipment-files-grid">{files.map((file) => <article className="equipment-file-card" key={file.id}>
       {urls[file.id] ? <a href={urls[file.id]} target="_blank" rel="noreferrer" className="equipment-file-preview"><img src={urls[file.id]} alt={file.caption || file.original_filename || "Photo de l’équipement"} /></a> : <div className="equipment-file-document">{file.content_type === "application/pdf" ? "PDF" : "FICHIER"}</div>}
       <div className="equipment-file-meta"><strong>{KINDS.find(([value]) => value === file.file_kind)?.[1] || file.file_kind}</strong><span>{file.original_filename || "Fichier sans nom"}</span>{file.caption && <p>{file.caption}</p>}<small>{formatSize(file.file_size_bytes)} · {new Date(file.created_at).toLocaleDateString("fr-FR")}</small>
-      <div className="equipment-file-actions">{!urls[file.id] && <button type="button" className="secondary-button" onClick={async () => { const { data } = await supabase.storage.from(BUCKET).createSignedUrl(file.storage_path, 60 * 30); if (data?.signedUrl) window.open(data.signedUrl, "_blank", "noopener,noreferrer"); else setError("Impossible de générer le lien sécurisé. Vérifie les droits Supabase."); }}>Ouvrir / télécharger</button>}<button type="button" className="text-danger-button" onClick={() => void deleteFile(file)}>Supprimer</button></div></div>
+      <div className="equipment-file-actions">{!urls[file.id] && <button type="button" className="secondary-button" onClick={async () => { const { data } = await supabase.storage.from(BUCKET).createSignedUrl(file.storage_path, 60 * 30); if (data?.signedUrl) window.open(data.signedUrl, "_blank", "noopener,noreferrer"); else setError("Impossible de générer le lien sécurisé. Vérifie les droits Supabase."); }}>Ouvrir / télécharger</button>}{canManage && <button type="button" className="text-danger-button" onClick={() => void deleteFile(file)}>Supprimer</button>}</div></div>
     </article>)}</div>}
   </section>;
 }
