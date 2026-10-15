@@ -49,7 +49,7 @@ body {
 .hero-note > svg { flex-shrink: 0; margin-top: 2px; }
 .hero-note strong { color: var(--ink); font-size: 14px; }
 .hero-note p { margin: 5px 0 0; color: #557077; font-size: 13px; line-height: 1.6; }
-.section-heading { display: flex; justify-content: space-between; align-items: end; gap: 18px; margin: 8px 0 22px; }
+.section-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; margin: 8px 0 22px; }
 .section-heading h2 { margin: 8px 0 0; font: 700 23px "Manrope", sans-serif; letter-spacing: -.025em; }
 .phase-tag { padding: 8px 11px; border: 1px solid var(--line); background: white; border-radius: 999px; color: var(--muted); font-size: 12px; white-space: nowrap; }
 .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -400,7 +400,7 @@ body {
 
 /* Étape 7 — rapports, indicateurs et exports */
 .reports-workspace { display:grid; gap:22px; margin-top:24px; }
-.report-toolbar { display:flex; align-items:end; justify-content:space-between; gap:14px; flex-wrap:wrap; padding:16px; border:1px solid var(--line); border-radius:14px; background:#fff; }
+.report-toolbar { display:flex; align-items: flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap; padding:16px; border:1px solid var(--line); border-radius:14px; background:#fff; }
 .report-toolbar label { display:grid; gap:7px; color:var(--muted); font-size:13px; font-weight:700; }
 .report-toolbar select { min-width:220px; padding:11px 12px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--ink); font:inherit; }
 .report-kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
@@ -552,7 +552,7 @@ body {
 .metric-index { color: #15909a; font: 800 21px "Manrope", sans-serif; }.landing-metrics strong, .landing-metrics small { display: block; }.landing-metrics strong { color: #28474d; font-size: 11px; }.landing-metrics small { margin-top: 5px; color: #87979a; font-size: 9px; }
 .metric-end { gap: 11px !important; }.metric-shield { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 11px; background: #eaf7f6; color: #15828c; }
 .landing-features { max-width: 1228px; margin: 0 auto; padding: 90px 0 78px; }
-.features-heading { display: flex; justify-content: space-between; align-items: end; gap: 40px; margin-bottom: 30px; }.features-heading .landing-kicker { margin-bottom: 15px; }
+.features-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; margin-bottom: 30px; }.features-heading .landing-kicker { margin-bottom: 15px; }
 .features-heading h2 { margin: 0; color: #183940; font: 800 clamp(28px, 3.1vw, 39px)/1.2 "Manrope", sans-serif; letter-spacing: -.045em; }.features-heading > p { max-width: 390px; margin: 0 0 4px; color: #71858a; font-size: 12px; line-height: 1.8; }
 .landing-feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .landing-feature-card { min-height: 177px; padding: 21px 22px; border: 1px solid #e4ecec; border-radius: 12px; background: #fff; transition: border-color .2s, transform .2s, box-shadow .2s; }.landing-feature-card:hover { transform: translateY(-3px); border-color: #b9dede; box-shadow: 0 13px 30px rgba(22,80,87,.06); }

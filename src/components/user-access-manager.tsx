@@ -46,7 +46,7 @@ export function UserAccessManager({ profiles, currentUserId }: { profiles: UserP
       return;
     }
     const action = profile.is_active ? "désactiver" : "réactiver";
-    if (!window.confirm(`Confirmer : ${action} l'accès de ${profile.display_name || "cet utilisateur"} ?`)) return;
+    if (!window.confirm(`Confirmer : ${action} l’accès de ${profile.display_name || "cet utilisateur"} ?`)) return;
     setBusyId(profile.id); setError(""); setMessage("");
     const supabase = createClient();
     const { error: updateError } = await supabase
@@ -63,7 +63,7 @@ export function UserAccessManager({ profiles, currentUserId }: { profiles: UserP
 
   return <section className="maintenance-list">
     <div className="section-heading"><div><p className="eyebrow">CONTRÔLE DES ACCÈS</p><h2>Comptes utilisateurs ({profiles.length})</h2></div></div>
-    <p className="muted-copy">Tous les comptes non administrateurs sont des observateurs en lecture seule. La fonction professionnelle déclarée ne change jamais les droits applicatifs. La désactivation bloque l'accès à l'application.</p>
+    <p className="muted-copy">Tous les comptes non administrateurs sont des observateurs en lecture seule. La fonction professionnelle déclarée ne change jamais les droits applicatifs. La désactivation bloque l’accès à l’application.</p>
     <form className="maintenance-form" onSubmit={inviteUser}>
       <h3>Inviter un observateur</h3>
       <p className="helper-text">Une invitation e-mail sera envoyée. Le compte ne pourra pas modifier les données du parc.</p>

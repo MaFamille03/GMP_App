@@ -70,7 +70,7 @@ export function BreakdownUpdateForm(props: Props) {
     const { error: updateError } = await supabase.from('breakdowns').update(payload).eq('id', props.id);
     if (updateError) { setError(`Mise à jour impossible : ${updateError.message}`); setBusy(false); return; }
 
-    // L'état de l'équipement ne revient à fonctionnel qu'après validation explicite.
+    // L'état de l’équipement ne revient à fonctionnel qu’après validation explicite.
     if (status === 'closed' && validateReturn && props.canValidate) {
       const { data: breakdown } = await supabase.from('breakdowns').select('equipment_id').eq('id', props.id).single();
       if (breakdown?.equipment_id) {
@@ -104,7 +104,7 @@ export function BreakdownUpdateForm(props: Props) {
     <label>Essais et contrôles avant remise en service<textarea name="safety_test_notes" rows={3} defaultValue={props.initialSafetyTests || ''} placeholder="Tests fonctionnels, alarmes, sécurité électrique si applicable, résultat et réserves…" /></label>
     {props.canValidate && <label className="checkbox-label"><input type="checkbox" name="return_to_service_validated" defaultChecked={props.initialValidated || false} /> Je confirme que les contrôles requis ont été réalisés et que l’équipement peut être remis en service</label>}
     <label>Notes complémentaires<textarea name="notes" rows={2} /></label>
-    <p className="helper-text">Ne valide la remise en service qu'après les contrôles adaptés à l'équipement et la documentation de leurs résultats. Une intervention externe ne remplace pas ta validation finale au GMP.</p>
+    <p className="helper-text">Ne valide la remise en service qu’après les contrôles adaptés à l’équipement et la documentation de leurs résultats. Une intervention externe ne remplace pas ta validation finale au GMP.</p>
     <button className="primary-button" disabled={busy}>{busy ? 'Enregistrement…' : 'Enregistrer le suivi'}</button>
   </form>;
 }

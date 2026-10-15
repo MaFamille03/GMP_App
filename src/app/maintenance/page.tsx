@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { CalendarClock, ClipboardCheck, Wrench, AlertTriangle } from "lucide-react";
+import { CalendarClock, ClipboardCheck, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { MaintenanceWorkspace } from "@/components/maintenance-workspace";
 

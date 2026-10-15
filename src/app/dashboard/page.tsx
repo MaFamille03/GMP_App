@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { CalendarClock, ClipboardList, ShieldCheck, Wrench, FileBarChart2, ArrowLeftRight, Users, Activity, AlertTriangle, CheckCircle2, Clock3, Settings } from "lucide-react";
+import { CalendarClock, ClipboardList, ShieldCheck, Wrench, FileBarChart2, ArrowLeftRight, Users, Activity, AlertTriangle, Clock3, Settings } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/sign-out-button";
 import Link from "next/link";
