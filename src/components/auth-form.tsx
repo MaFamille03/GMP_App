@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -17,6 +17,15 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const [busy, setBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [cooldownSeconds, setCooldownSeconds] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (cooldownSeconds === null || cooldownSeconds <= 0) return;
+    const timer = window.setTimeout(() => {
+      setCooldownSeconds((seconds) => (seconds === null ? null : Math.max(0, seconds - 1)));
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [cooldownSeconds]);
 
   const isRegister = mode === "register";
 
@@ -25,6 +34,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     setBusy(true);
     setErrorMessage("");
     setSuccessMessage("");
+    setCooldownSeconds(null);
 
     try {
       const supabase = createClient();
@@ -71,6 +81,15 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         setErrorMessage("Adresse e-mail ou mot de passe incorrect. Vérifie tes identifiants et réessaie.");
       } else if (normalized.includes("email not confirmed")) {
         setErrorMessage("Ton adresse e-mail n’a pas encore été confirmée. Consulte ta boîte de réception pour valider ton compte.");
+      } else if (normalized.includes("for security purposes") && normalized.includes("request this after")) {
+        const secondsMatch = rawMessage.match(/after\s+(\d+)\s+seconds?/i);
+        const seconds = secondsMatch ? Number(secondsMatch[1]) : null;
+        if (seconds !== null) {
+          setCooldownSeconds(seconds);
+          setErrorMessage("");
+        } else {
+          setErrorMessage("Pour protéger ton compte, attends quelques instants avant de demander un nouvel e-mail de confirmation.");
+        }
       } else {
         setErrorMessage(rawMessage);
       }
@@ -145,7 +164,15 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           />
         </label>
 
-        {errorMessage && <div className="form-alert form-alert-error" role="alert">{errorMessage}</div>}
+        {(errorMessage || cooldownSeconds !== null) && (
+          <div className="form-alert form-alert-error" role="alert" aria-live="polite">
+            {cooldownSeconds !== null
+              ? cooldownSeconds > 0
+                ? `Pour protéger ton compte, attends encore ${cooldownSeconds} seconde${cooldownSeconds === 1 ? "" : "s"} avant de demander un nouvel e-mail de confirmation.`
+                : "Tu peux maintenant demander un nouvel e-mail de confirmation."
+              : errorMessage}
+          </div>
+        )}
         {successMessage && <div className="form-alert form-alert-success" role="status">{successMessage}</div>}
 
         <button className="primary-button" type="submit" disabled={busy}>
