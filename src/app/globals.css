@@ -73,24 +73,23 @@ body {
 
 
 /* Étape 2 — Authentification et espace utilisateur */
-.auth-layout { min-height: 100vh; display: grid; grid-template-columns: minmax(300px, .85fr) 1.15fr; }
+.auth-layout { min-height: 100vh; display: grid; grid-template-columns: minmax(360px, 1fr) minmax(480px, .95fr); background: #f7fafa; }
 .auth-side {
-  display: flex; flex-direction: column; padding: 34px clamp(24px, 5vw, 72px);
-  color: #fff; background: linear-gradient(145deg, #0d6570 0%, #168d9a 55%, #1aa2a5 100%);
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; flex-direction: column; padding: 34px clamp(24px, 4.5vw, 68px);
+  color: #fff; background: #0d6570 url('/images/gmp-medical-background.jpg') center / cover no-repeat;
 }
-.gmp-logo { display: block; width: 190px; height: auto; object-fit: contain; border-radius: 8px; background: #fff; }
-.auth-brand { align-items: center; gap: 16px; }
-.auth-brand strong { font-size: 12px; letter-spacing: .08em; }
-.auth-brand span { max-width: 180px; line-height: 1.5; }
-.auth-brand strong { color: #fff; }
-.auth-brand span { color: rgba(255,255,255,.72); }
-.auth-side-copy { max-width: 480px; margin: auto 0; padding: 80px 0; }
-.auth-side-copy .eyebrow { color: #c9f2f0; }
+.auth-side::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(255,255,255,.90) 0%, rgba(239,250,250,.78) 38%, rgba(7,93,105,.76) 100%); }
+.auth-brand { display: flex; align-items: center; flex-direction: column; gap: 12px; width: min(100%, 440px); }
+.auth-logo { display: block; width: min(100%, 390px); height: auto; object-fit: contain; border-radius: 4px; }
+.auth-brand-tag { display: inline-flex; justify-content: center; align-items: center; max-width: 100%; padding: 10px 20px; border-radius: 999px; color: #fff !important; background: var(--teal); font-size: clamp(13px, 1.3vw, 18px) !important; font-weight: 700; text-align: center; box-shadow: 0 8px 24px rgba(5,95,104,.18); }
+.auth-side-copy { position: relative; max-width: 480px; margin: auto 0 0; padding: 80px 0 48px; text-shadow: 0 1px 8px rgba(0,45,52,.14); }
+.auth-side-copy .eyebrow { color: #e0ffff; }
 .auth-side-copy h2 { margin: 20px 0; font: 800 clamp(30px, 3.2vw, 46px)/1.15 "Manrope", sans-serif; letter-spacing: -.04em; }
 .auth-side-copy > p:last-child { color: rgba(255,255,255,.8); font-size: 15px; line-height: 1.8; }
-.auth-side-footer { color: rgba(255,255,255,.72); font-size: 12px; }
-.auth-main { display: grid; place-items: center; padding: 48px 28px; background: radial-gradient(ellipse at 90% 0%, rgba(22,141,154,.07), transparent 36%), #f8fbfb; }
-.auth-card { width: min(100%, 460px); padding: 34px; border: 1px solid rgba(217,227,229,.85); border-radius: 22px; background: rgba(255,255,255,.96); box-shadow: 0 24px 70px rgba(19,61,68,.08); }
+.auth-side-footer { position: relative; color: rgba(255,255,255,.88); font-size: 12px; }
+.auth-main { display: grid; place-items: center; padding: 36px 22px; }
+.auth-card { width: min(100%, 440px); padding: 12px 0; }
 .auth-card-icon { width: 48px; height: 48px; display: grid; place-items: center; margin-bottom: 24px; color: var(--teal-dark); background: #e7f5f5; border-radius: 14px; }
 .auth-card h1 { margin: 10px 0; font: 800 32px/1.2 "Manrope", sans-serif; letter-spacing: -.04em; }
 .auth-intro { margin: 0 0 26px; color: var(--muted); font-size: 14px; line-height: 1.7; }
@@ -140,10 +139,10 @@ body {
 .security-note strong { color: var(--ink); }
 @media (max-width: 760px) {
   .auth-layout { grid-template-columns: 1fr; }
-  .auth-side { min-height: auto; padding: 22px 20px; }
-  .gmp-logo { width: 142px; }
-  .auth-brand { gap: 12px; }
-  .auth-card { padding: 26px 21px; border-radius: 18px; }
+  .auth-layout { grid-template-columns: 1fr; }
+  .auth-side { min-height: 540px; padding: 24px 22px; background-position: center; }
+  .auth-logo { width: min(100%, 300px); }
+  .auth-brand { margin: 0 auto; }
   .auth-side-copy { padding: 34px 0 18px; }
   .auth-side-copy h2 { font-size: 30px; }
   .auth-side-footer { display: none; }
