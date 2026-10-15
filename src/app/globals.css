@@ -862,3 +862,92 @@ button, input, select, textarea { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* GMP — Logo officiel, menu de compte et vue opérationnelle par service */
+.gmp-brand-logo { display:grid; place-items:center; flex:0 0 112px; width:112px; height:54px; overflow:hidden; border:1px solid #e7edf0; border-radius:12px; background:#fff; padding:4px; }
+.gmp-brand-logo img { display:block; width:100%; height:100%; object-fit:contain; }
+.gmp-account-menu { position:relative; z-index:30; }
+.gmp-account-menu > summary { display:flex; align-items:center; gap:9px; min-width:176px; max-width:250px; padding:6px 9px; border:1px solid #e3eaf0; border-radius:11px; background:#fff; cursor:pointer; list-style:none; }
+.gmp-account-menu > summary::-webkit-details-marker { display:none; }
+.gmp-account-avatar { display:grid; place-items:center; flex:0 0 34px; width:34px; height:34px; border-radius:10px; color:#286b83; background:#eaf5f7; }
+.gmp-account-summary-copy { display:grid; min-width:0; flex:1; gap:3px; text-align:left; }
+.gmp-account-summary-copy strong { overflow:hidden; color:#2d4354; font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
+.gmp-account-summary-copy small { color:#81909c; font-size:9px; }
+.gmp-account-chevron { flex-shrink:0; color:#84939f; transition:transform .18s ease; }
+.gmp-account-menu[open] .gmp-account-chevron { transform:rotate(180deg); }
+.gmp-account-popover { position:absolute; top:calc(100% + 9px); right:0; width:min(290px,calc(100vw - 28px)); padding:9px; border:1px solid #e2eaf0; border-radius:13px; background:#fff; box-shadow:0 18px 50px #1b35451c; }
+.gmp-account-identity { display:grid; gap:5px; padding:10px 10px 13px; border-bottom:1px solid #edf1f4; }
+.gmp-account-identity strong { color:#293f50; font-size:12px; }
+.gmp-account-identity span { overflow-wrap:anywhere; color:#758695; font-size:10px; }
+.gmp-account-identity small { width:fit-content; padding:4px 7px; border-radius:5px; color:#6d7d8b; background:#f1f4f6; font-size:9px; font-weight:750; }
+.gmp-account-identity small.is-admin { color:#206a7b; background:#eaf7f8; }
+.gmp-account-popover > a { display:flex; align-items:center; gap:9px; padding:11px 10px; border-radius:8px; color:#435b6d; font-size:11px; text-decoration:none; }
+.gmp-account-popover > a:hover { color:#21698b; background:#f3f8fa; }
+.gmp-account-logout { padding:8px 8px 3px; border-top:1px solid #edf1f4; }
+.gmp-account-logout .secondary-button { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:37px; border:1px solid #f0dede; border-radius:8px; color:#a33f43; background:#fff8f8; font-size:11px; }
+.gmp-account-logout .secondary-button:hover { background:#fff0f0; }
+.gmp-service-overview { margin-top:20px; }
+.gmp-section-intro { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:13px; }
+.gmp-section-intro h2 { margin:0; color:#20394c; font:800 19px "Manrope",Arial,sans-serif; letter-spacing:-.025em; }
+.gmp-section-intro p:last-child { margin:6px 0 0; color:#81909c; font-size:11px; line-height:1.55; }
+.gmp-section-intro .gmp-overline { margin:0 0 6px; color:#2d8793; font-size:9px; font-weight:850; letter-spacing:.13em; }
+.gmp-service-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.gmp-service-card { min-width:0; overflow:hidden; border:1px solid #e1e9ee; border-radius:13px; background:#fff; box-shadow:0 3px 12px #203d5205; }
+.gmp-service-card-summary { display:flex; align-items:center; gap:11px; padding:15px; cursor:pointer; list-style:none; }
+.gmp-service-card-summary::-webkit-details-marker { display:none; }
+.gmp-service-card-icon { display:grid; place-items:center; flex:0 0 39px; width:39px; height:39px; border-radius:10px; color:#3b7b99; background:#edf5fa; }
+.gmp-service-card-icon.marker-2 { color:#327e69; background:#eaf7f1; }.gmp-service-card-icon.marker-3 { color:#a16a27; background:#fff5e6; }.gmp-service-card-icon.marker-4 { color:#7564a5; background:#f2effb; }.gmp-service-card-icon.marker-5 { color:#a14f54; background:#fff0f0; }
+.gmp-service-card-title { display:grid; min-width:0; flex:1; gap:4px; }
+.gmp-service-card-title strong { overflow:hidden; color:#30495b; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+.gmp-service-card-title small { color:#8a98a4; font-size:10px; }
+.gmp-service-total { display:grid; place-items:center; min-width:30px; height:30px; padding:0 7px; border:1px solid #e3edf2; border-radius:8px; color:#2b617d; background:#f7fbfd; font-size:12px; font-weight:850; }
+.gmp-service-expand { display:grid; place-items:center; color:#91a0ac; transition:transform .18s ease; }
+.gmp-service-card[open] .gmp-service-expand { transform:rotate(90deg); }
+.gmp-service-status-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; padding:0 14px 14px; }
+.gmp-service-status { display:grid; gap:5px; min-width:0; padding:10px 8px; border-radius:8px; }
+.gmp-service-status strong { font:800 18px "Manrope",Arial,sans-serif; }
+.gmp-service-status span { color:#6f7f8c; font-size:9px; line-height:1.3; }
+.status-functional { color:#268166; background:#eff9f4; }.status-broken { color:#b34848; background:#fff2f2; }.status-out { color:#8d5555; background:#f9eeee; }.status-maintenance { color:#9b6b22; background:#fff7e9; }
+.gmp-service-extra-status { margin:0 14px 12px; color:#83919c; font-size:9px; }
+.gmp-service-equipment-list { border-top:1px solid #edf1f4; }
+.gmp-service-table-head,.gmp-service-equipment-row { display:grid; grid-template-columns:minmax(58px,.65fr) minmax(90px,1.4fr) minmax(110px,1fr); align-items:center; gap:9px; padding:10px 14px; }
+.gmp-service-table-head { color:#9aa5af; background:#f8fafc; font-size:8px; font-weight:850; letter-spacing:.06em; text-transform:uppercase; }
+.gmp-service-equipment-row { border-top:1px solid #f0f3f5; color:#758391; font-size:9px; text-decoration:none; }
+.gmp-service-equipment-row:hover { background:#f8fbfd; }
+.gmp-service-equipment-row > span:first-child { overflow-wrap:anywhere; color:#587082; font-weight:700; }
+.gmp-service-equipment-row strong { overflow:hidden; color:#344c5d; font-size:10px; text-overflow:ellipsis; }
+.gmp-equipment-status-pill { display:inline-flex; justify-self:start; max-width:100%; padding:5px 7px; border-radius:6px; color:#677b88; background:#f0f4f6; font-size:8px; font-weight:750; line-height:1.3; }
+.gmp-equipment-status-pill.functional { color:#247b5e; background:#eaf7f0; }.gmp-equipment-status-pill.restricted { color:#6f61a2; background:#f0edfb; }.gmp-equipment-status-pill.broken { color:#b04444; background:#fff0f0; }.gmp-equipment-status-pill.out { color:#8d5555; background:#f9eeee; }.gmp-equipment-status-pill.maintenance { color:#94661d; background:#fff5e3; }.gmp-equipment-status-pill.retired { color:#6d7780; background:#eef1f3; }
+.gmp-service-empty { margin:0; padding:14px; color:#84929e; font-size:10px; line-height:1.6; }
+.gmp-service-empty-global { grid-column:1/-1; border:1px dashed #d7e2e8; border-radius:12px; background:#fff; }
+.gmp-service-card-footer { display:flex; justify-content:flex-end; padding:10px 14px; border-top:1px solid #edf1f4; }
+.gmp-service-card-footer a { display:flex; align-items:center; gap:6px; color:#2c7395; font-size:9px; font-weight:800; text-decoration:none; }
+@media (max-width:900px) { .gmp-service-cards { grid-template-columns:minmax(0,1fr); }.gmp-account-menu > summary { min-width:0; }.gmp-account-summary-copy { max-width:120px; } }
+@media (max-width:520px) { .gmp-topbar-actions { gap:7px; }.gmp-account-menu > summary { padding:5px; }.gmp-account-summary-copy { display:none; }.gmp-account-chevron { width:13px; }.gmp-account-popover { right:-2px; }.gmp-section-intro { align-items:flex-start; flex-direction:column; }.gmp-service-status-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.gmp-service-table-head,.gmp-service-equipment-row { grid-template-columns:minmax(52px,.65fr) minmax(80px,1.2fr); }.gmp-service-table-head span:last-child { display:none; }.gmp-service-equipment-row .gmp-equipment-status-pill { grid-column:2; margin-top:-3px; }.gmp-brand-logo { flex-basis:88px; width:88px; height:43px; padding:3px; }.gmp-brand-copy strong { font-size:17px; } }
+.account-page .topbar .secondary-button { display:inline-flex; align-items:center; gap:7px; }
+.account-profile-card { max-width:980px; margin:24px auto; overflow:hidden; border:1px solid #e0e8ed; border-radius:17px; background:#fff; box-shadow:0 6px 24px #203d5208; }
+.account-profile-heading { display:flex; align-items:center; gap:14px; padding:24px; border-bottom:1px solid #edf1f4; }
+.account-profile-avatar { display:grid; place-items:center; flex:0 0 54px; width:54px; height:54px; border-radius:15px; color:#286b83; background:#eaf5f7; }
+.account-profile-heading > div:nth-child(2) { min-width:0; flex:1; }
+.account-profile-heading h2 { margin:0; color:#263f51; font:800 18px "Manrope",Arial,sans-serif; }
+.account-profile-heading p { margin:5px 0 0; overflow-wrap:anywhere; color:#80909c; font-size:11px; }
+.account-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 20px; padding:8px 24px; }
+.account-detail { display:grid; gap:9px; padding:17px 0; border-bottom:1px solid #f0f3f5; }
+.account-detail > span { display:flex; align-items:center; gap:7px; color:#83919d; font-size:10px; }
+.account-detail > strong { overflow-wrap:anywhere; color:#344d5f; font-size:12px; }
+.account-profile-note { margin:0 24px; padding:13px 14px; border-radius:9px; color:#6c8290; background:#f4f8fa; font-size:10px; line-height:1.6; }
+.account-profile-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:9px; padding:20px 24px 24px; }
+.account-profile-actions a { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }
+@media(max-width:600px) { .account-profile-heading { align-items:flex-start; flex-wrap:wrap; padding:18px; }.account-profile-heading .role-pill { margin-left:68px; }.account-detail-grid { grid-template-columns:minmax(0,1fr); padding:5px 18px; }.account-profile-note { margin:0 18px; }.account-profile-actions { padding:18px; }.account-profile-actions a { width:100%; } }
+.account-password-panel { max-width:980px; margin:0 auto 28px; padding:22px 24px; border:1px solid #e0e8ed; border-radius:15px; background:#fff; }
+.account-password-heading { display:flex; align-items:center; gap:11px; margin-bottom:18px; }
+.account-password-heading > span { display:grid; place-items:center; width:39px; height:39px; border-radius:10px; color:#286b83; background:#eaf5f7; }
+.account-password-heading h2 { margin:0; color:#30495b; font:800 14px "Manrope",Arial,sans-serif; }
+.account-password-heading p { margin:5px 0 0; color:#83919d; font-size:10px; }
+.account-password-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+.account-password-form label { display:grid; gap:7px; color:#5f7382; font-size:10px; font-weight:700; }
+.account-password-form input { width:100%; min-width:0; padding:11px 12px; border:1px solid #dce5eb; border-radius:8px; color:#2f4657; background:#fff; font:inherit; }
+.account-password-form input:focus { outline:2px solid #a8d6df; outline-offset:1px; }
+.account-password-form .form-alert,.account-password-form button { grid-column:1/-1; }
+.account-password-form button { justify-self:start; }
+@media(max-width:600px) { .account-password-panel { margin:0 0 22px; padding:18px; }.account-password-form { grid-template-columns:minmax(0,1fr); }.account-password-form button { width:100%; } }

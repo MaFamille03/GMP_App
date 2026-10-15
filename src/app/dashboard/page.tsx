@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import {
   Activity, AlertTriangle, ArrowRight, ArrowUpRight,
@@ -6,12 +7,15 @@ import {
   LifeBuoy, Package, Settings, ShieldCheck, Stethoscope, Users, Wrench,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { AccountMenu } from "@/components/account-menu";
 import { SignOutButton } from "@/components/sign-out-button";
 
 const OPEN_BREAKDOWN_STATUSES = ["new", "to_qualify", "assigned", "in_progress", "waiting_parts", "waiting_provider", "awaiting_validation"];
 const ACTIVE_ORDER_STATUSES = ["planned", "assigned", "in_progress", "waiting_parts", "waiting_provider", "awaiting_validation"];
 const formatMoney = (value: number) => `${value.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} FCFA`;
 const formatDate = (value: string) => new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
+const operationalStatusLabels: Record<string, string> = { functional: "Fonctionnel", functional_restricted: "Fonctionnement restreint", broken: "En panne", out_of_service: "Hors service", under_maintenance: "En maintenance", retired: "Retiré du parc" };
+const operationalStatusClasses: Record<string, string> = { functional: "functional", functional_restricted: "restricted", broken: "broken", out_of_service: "out", under_maintenance: "maintenance", retired: "retired" };
 
 const navItems = [
   { href: "/dashboard", label: "Vue d’ensemble", icon: LayoutDashboard },
@@ -31,14 +35,14 @@ export default async function DashboardPage() {
   const { data: profile } = await supabase.from("profiles").select("display_name,job_title,role,is_active").eq("id", user.id).maybeSingle();
   if (profile?.is_active === false) redirect("/access-disabled");
 
-  const [{ data: equipment, error: equipmentError }, { data: breakdowns, error: breakdownError }, { data: orders, error: orderError }, { data: serviceRows }] = await Promise.all([
-    supabase.from("equipment").select("id,internal_code,designation,operational_status,criticality,next_maintenance_at,services(name)").order("designation").limit(3000),
+  const [{ data: equipment, error: equipmentError }, { data: breakdowns, error: breakdownError }, { data: orders, error: orderError }, { data: serviceRows, error: serviceError }] = await Promise.all([
+    supabase.from("equipment").select("id,internal_code,designation,operational_status,criticality,next_maintenance_at,service_id,services(id,name)").order("designation").limit(3000),
     supabase.from("breakdowns").select("id,status,priority,reported_at,cost_amount,resolved_at,equipment_id").order("reported_at", { ascending: false }).limit(1000),
     supabase.from("work_orders").select("id,status,planned_start_at,next_due_date,estimated_cost,actual_cost,order_type").limit(2000),
-    supabase.from("services").select("id,name").order("name").limit(100),
+    supabase.from("services").select("id,name,is_active").order("name").limit(100),
   ]);
 
-  const loadError = equipmentError || breakdownError || orderError;
+  const loadError = equipmentError || breakdownError || orderError || serviceError;
   const equipmentRows = equipment || [];
   const breakdownRows = breakdowns || [];
   const orderRows = orders || [];
@@ -58,6 +62,7 @@ export default async function DashboardPage() {
   const displayName = profile?.display_name || user.user_metadata?.full_name || user.email || "Utilisateur";
   const jobTitle = profile?.job_title || user.user_metadata?.job_title || "Fonction non renseignée";
   const isAdmin = profile?.role === "admin";
+  const accountEmail = user.email || "Adresse e-mail non renseignée";
   const serviceCounts = (serviceRows || []).map((service) => ({
     name: service.name,
     count: equipmentRows.filter((item: any) => Array.isArray(item.services) ? item.services.some((s: any) => s.name === service.name) : item.services?.name === service.name).length,
@@ -72,8 +77,8 @@ export default async function DashboardPage() {
   return (
     <div className="gmp-app-layout">
       <aside className="gmp-sidebar">
-        <Link href="/dashboard" className="gmp-brand">
-          <span className="gmp-brand-mark">G</span>
+        <Link href="/dashboard" className="gmp-brand" aria-label="GMP Polyclinique — Vue d’ensemble">
+          <span className="gmp-brand-logo"><Image src="/images/gmp-polyclinique-logo.png" alt="Logo GMP Polyclinique" width={384} height={178} priority /></span>
           <span className="gmp-brand-copy"><strong>GMP</strong><small>PARC BIOMÉDICAL</small></span>
         </Link>
         <div className="gmp-sidebar-label">ESPACE DE TRAVAIL</div>
@@ -98,7 +103,7 @@ export default async function DashboardPage() {
       <main className="gmp-main-content">
         <header className="gmp-topbar">
           <div><p className="gmp-breadcrumb">GMP <span>/</span> Vue d’ensemble</p><p className="gmp-topbar-subtitle">Polyclinique Groupe Médical du Plateau</p></div>
-          <div className="gmp-topbar-actions"><span className="gmp-secure-indicator"><ShieldCheck size={15}/> Espace sécurisé</span><span className={`gmp-role-chip ${isAdmin ? "admin" : ""}`}>{isAdmin ? "Administrateur" : "Observateur"}</span></div>
+          <div className="gmp-topbar-actions"><span className="gmp-secure-indicator"><ShieldCheck size={15}/> Espace sécurisé</span><AccountMenu displayName={displayName} email={accountEmail} isAdmin={isAdmin} /></div>
         </header>
 
         <section className="gmp-page-intro">
@@ -147,6 +152,48 @@ export default async function DashboardPage() {
               <Link href="/reports" className="gmp-quick-link"><span className="gmp-quick-icon green"><FileBarChart2 size={18}/></span><span><strong>Consulter les rapports</strong><small>Bilans et données de suivi</small></span><ArrowRight size={16}/></Link>
             </div>
           </article>
+        </section>
+
+        <section className="gmp-service-overview">
+          <div className="gmp-section-intro">
+            <div><p className="gmp-overline">ORGANISATION DU PARC</p><h2>Équipements par service</h2><p>Consulte les appareils de chaque service et leur état opérationnel.</p></div>
+            <Link href="/settings" className="gmp-text-link">Gérer les services <ArrowRight size={14}/></Link>
+          </div>
+          <div className="gmp-service-cards">
+            {(serviceRows || []).filter((service: any) => service.is_active !== false).map((service: any, index: number) => {
+              const serviceEquipment = equipmentRows.filter((item: any) => {
+                const related = item.services;
+                return item.service_id === service.id || (Array.isArray(related) ? related.some((row: any) => row.id === service.id || row.name === service.name) : related?.id === service.id || related?.name === service.name);
+              });
+              const counts = {
+                functional: serviceEquipment.filter((item: any) => item.operational_status === "functional").length,
+                broken: serviceEquipment.filter((item: any) => item.operational_status === "broken").length,
+                out: serviceEquipment.filter((item: any) => item.operational_status === "out_of_service").length,
+                maintenance: serviceEquipment.filter((item: any) => item.operational_status === "under_maintenance").length,
+                restricted: serviceEquipment.filter((item: any) => item.operational_status === "functional_restricted").length,
+                retired: serviceEquipment.filter((item: any) => item.operational_status === "retired").length,
+              };
+              return <details className="gmp-service-card" key={service.id} open={index === 0}>
+                <summary className="gmp-service-card-summary">
+                  <span className={`gmp-service-card-icon marker-${(index % 5) + 1}`}><Stethoscope size={19}/></span>
+                  <span className="gmp-service-card-title"><strong>{service.name}</strong><small>{serviceEquipment.length} appareil(s) recensé(s)</small></span>
+                  <span className="gmp-service-total">{serviceEquipment.length}</span>
+                  <span className="gmp-service-expand"><ArrowRight size={15}/></span>
+                </summary>
+                <div className="gmp-service-status-grid">
+                  <div className="gmp-service-status status-functional"><strong>{counts.functional}</strong><span>Fonctionnels</span></div>
+                  <div className="gmp-service-status status-broken"><strong>{counts.broken}</strong><span>En panne</span></div>
+                  <div className="gmp-service-status status-out"><strong>{counts.out}</strong><span>Hors service</span></div>
+                  <div className="gmp-service-status status-maintenance"><strong>{counts.maintenance}</strong><span>En maintenance</span></div>
+                </div>
+                {(counts.restricted + counts.retired) > 0 && <p className="gmp-service-extra-status">{counts.restricted} en fonctionnement restreint · {counts.retired} retiré(s) du parc</p>}
+                {serviceEquipment.length ? <div className="gmp-service-equipment-list"><div className="gmp-service-table-head"><span>Code</span><span>Équipement</span><span>État</span></div>{serviceEquipment.map((item: any) => <Link href={`/equipment/${item.id}`} className="gmp-service-equipment-row" key={item.id}><span>{item.internal_code || "—"}</span><strong>{item.designation}</strong><span className={`gmp-equipment-status-pill ${operationalStatusClasses[item.operational_status] || "out"}`}>{operationalStatusLabels[item.operational_status] || item.operational_status || "Non renseigné"}</span></Link>)}</div> : <p className="gmp-service-empty">Aucun appareil n’est encore affecté à ce service. Ajoute ou modifie un équipement dans l’inventaire pour le rattacher à ce service.</p>}
+                <div className="gmp-service-card-footer"><Link href="/equipment">Ouvrir le parc biomédical <ArrowRight size={14}/></Link></div>
+              </details>;
+            })}
+            {!(serviceRows || []).some((service: any) => service.is_active !== false) && <div className="gmp-service-empty gmp-service-empty-global">Aucun service actif n’est renseigné. Ajoute les services dans Paramètres pour organiser les appareils.</div>}
+            {(() => { const assigned = new Set(equipmentRows.filter((item: any) => item.service_id || (Array.isArray(item.services) ? item.services.length > 0 : Boolean(item.services?.id))).map((item: any) => item.id)); const unassigned = equipmentRows.filter((item: any) => !assigned.has(item.id)); if (!unassigned.length) return null; return <details className="gmp-service-card gmp-service-unassigned"><summary className="gmp-service-card-summary"><span className="gmp-service-card-icon marker-5"><AlertTriangle size={19}/></span><span className="gmp-service-card-title"><strong>Service non renseigné</strong><small>{unassigned.length} appareil(s) à affecter</small></span><span className="gmp-service-total">{unassigned.length}</span><span className="gmp-service-expand"><ArrowRight size={15}/></span></summary><div className="gmp-service-equipment-list"><div className="gmp-service-table-head"><span>Code</span><span>Équipement</span><span>État</span></div>{unassigned.map((item: any) => <Link href={`/equipment/${item.id}`} className="gmp-service-equipment-row" key={item.id}><span>{item.internal_code || "—"}</span><strong>{item.designation}</strong><span className={`gmp-equipment-status-pill ${operationalStatusClasses[item.operational_status] || "out"}`}>{operationalStatusLabels[item.operational_status] || item.operational_status || "Non renseigné"}</span></Link>)}</div></details>; })()}
+          </div>
         </section>
 
         <section className="gmp-summary-strip"><div className="gmp-summary-icon"><Activity size={19}/></div><div><strong>Suivi financier des opérations</strong><p>Montants cumulés renseignés dans les dossiers de panne et de maintenance.</p></div><strong className="gmp-summary-amount">{formatMoney(totalCosts)}</strong><Link href="/reports" className="gmp-summary-link">Détails <ArrowRight size={14}/></Link></section>

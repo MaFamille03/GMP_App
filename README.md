@@ -42,3 +42,6 @@ npm run build
 - `FINAL_VALIDATION_ET_DEPLOIEMENT.md` : liste de contrôle de mise en service.
 
 Cette archive est une version de travail consolidée. Elle n’est pas certifiée ni déclarée prête pour la production avant les contrôles décrits ci-dessus.
+
+## Compte administrateur et appareils par service
+Voir `docs/COMPTE_ADMINISTRATEUR_ET_VUE_PAR_SERVICE.md`. Pour promouvoir le compte `minnhindje@gmail.com`, exécuter manuellement `supabase/promote_admin_minnhindje.sql` dans le SQL Editor du projet Supabase GMP approprié, puis fermer et rouvrir la session. Ne jamais conférer le rôle administrateur depuis le navigateur.
