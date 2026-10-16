@@ -143,7 +143,7 @@ async function createPdf(title: string, subtitle: string, fields: PdfField[]): P
     const first = sections.slice(0, 1); const rest = sections.slice(1);
     const firstW = contentW * 0.57;
     const calcSectionH = (s: Section, w: number) => {
-      const lw = Math.min(w * 0.42, 260); let h = sectionHeaderH;
+      let h = sectionHeaderH;
       for (const f of s.fields) { ctx.font = `${fontSize}px Arial`; const valueLines = wrap(ctx, `${f.label} : ${f.value || "Non renseigné"}`, w - 36); h += Math.max(lineH, valueLines.length * lineH) + rowPadY * 2; }
       return h;
     };
@@ -164,7 +164,7 @@ async function createPdf(title: string, subtitle: string, fields: PdfField[]): P
     }
   } else {
     // Other documents: two columns for concise sections, full-width for reports with one section.
-    let colY = [y, y];
+    const colY = [y, y];
     sections.forEach((s, i) => {
       const col = cols === 2 ? i % 2 : 0;
       const x = margin + (cols === 2 ? col * (colW + gap) : 0);
