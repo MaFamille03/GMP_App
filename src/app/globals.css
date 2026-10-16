@@ -1066,3 +1066,29 @@ button, input, select, textarea { font: inherit; }
   .gmp-brand-logo { flex-basis: 142px; width: 142px; height: 64px; }
   .gmp-nav-link { font-size: 13px; }
 }
+
+
+/* Ajustements demandés : remonter la marque et la zone de suivi */
+.gmp-sidebar { padding-top: 10px; }
+.gmp-brand { margin-top: 0; margin-bottom: 12px; }
+.gmp-brand-logo { align-items: start; }
+.gmp-brand-copy small { font-weight: 800; }
+.gmp-sidebar-help { margin-bottom: 14px; }
+
+/* Lisibilité des zones de suivi, sans modifier tableaux, listes, cartes, indicateurs ni formulaires */
+.gmp-availability-panel .gmp-panel-heading h2 { font-size: 18px; }
+.gmp-availability-panel .gmp-panel-heading p { font-size: 13px; }
+.gmp-availability-number > span { font-size: 13px; }
+.gmp-availability-note { font-size: 12px; line-height: 1.55; }
+.gmp-panel-heading h2 { font-size: 17px; }
+.gmp-panel-heading p { font-size: 12px; line-height: 1.55; }
+.gmp-panel-bottom, .gmp-text-link { font-size: 12px; }
+.gmp-service-overview .gmp-section-intro h2 { font-size: 21px; }
+.gmp-service-overview .gmp-section-intro p:not(.gmp-overline) { font-size: 13px; line-height: 1.6; }
+
+/* Paramètres : réduire les espaces excessifs de l'identité du site */
+.settings-form { gap: 14px 18px; align-items: start; }
+.settings-form label { gap: 6px; }
+.settings-form input, .settings-form textarea, .settings-form select { margin-top: 0; }
+.settings-panel { margin-bottom: 18px; }
+.settings-panel-heading { margin-bottom: 14px; }

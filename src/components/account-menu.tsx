@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronDown, CircleUserRound, Settings, Users } from "lucide-react";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -11,8 +14,29 @@ export function AccountMenu({
   email: string;
   isAdmin: boolean;
 }) {
+  const menuRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    function closeOnOutsideClick(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        menuRef.current.open = false;
+      }
+    }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape" && menuRef.current) {
+        menuRef.current.open = false;
+      }
+    }
+    document.addEventListener("click", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("click", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
+
   return (
-    <details className="gmp-account-menu">
+    <details ref={menuRef} className="gmp-account-menu">
       <summary aria-label="Ouvrir les paramètres du compte">
         <span className="gmp-account-avatar"><CircleUserRound size={18} /></span>
         <span className="gmp-account-summary-copy">
