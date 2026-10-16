@@ -108,7 +108,7 @@ export default async function DashboardPage() {
 
         <section className="gmp-page-intro">
           <div><p className="gmp-overline">PILOTAGE BIOMÉDICAL</p><h1>Vue d’ensemble</h1><p>Bonjour {displayName.split(" ")[0]}, voici la situation actuelle du parc et les opérations à suivre.</p></div>
-          <div className="gmp-intro-actions"><Link href="/calendar" className="gmp-calendar-action"><CalendarClock size={17}/> Calendrier</Link>{isAdmin && <Link href="/equipment/new" className="gmp-primary-action"><span>+</span> Ajouter un équipement</Link>}</div>
+          {isAdmin && <Link href="/equipment/new" className="gmp-primary-action"><span>+</span> Ajouter un équipement</Link>}
         </section>
 
         {!profile && <div className="form-alert form-alert-error">Le compte est connecté, mais sa fiche profil est introuvable. Vérifie les migrations Supabase.</div>}
