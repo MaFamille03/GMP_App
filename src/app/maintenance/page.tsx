@@ -4,7 +4,9 @@ import { CalendarClock, ClipboardCheck, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { MaintenanceWorkspace } from "@/components/maintenance-workspace";
 
-export default async function MaintenancePage() {
+export default async function MaintenancePage({ searchParams }: { searchParams: Promise<{ from?: string; date?: string }> }) {
+  const { from, date } = await searchParams;
+  const calendarReturnHref = from === "calendar" ? `/calendar${date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? `?date=${date}` : ""}` : null;
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) redirect("/login");
@@ -21,7 +23,7 @@ export default async function MaintenancePage() {
     supabase.from("vendors").select("id,name,vendor_type,is_active").eq("is_active", true).in("vendor_type", ["maintenance_provider", "manufacturer", "other"]).order("name")
   ]);
   return <main className="dashboard-shell">
-    <header className="topbar"><Link className="brand" href="/dashboard"><div className="brand-mark">G</div><div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div></Link><Link className="secondary-button" href="/dashboard">Retour au tableau de bord</Link></header>
+    <header className="topbar"><Link className="brand" href="/dashboard"><div className="brand-mark">G</div><div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div></Link><div className="detail-header-actions">{calendarReturnHref && <Link className="secondary-button" href={calendarReturnHref}>← Retour au calendrier</Link>}<Link className="secondary-button" href="/dashboard">Retour au tableau de bord</Link></div></header>
     <section className="dashboard-welcome"><p className="eyebrow">ÉTAPE 5 · MAINTENANCE</p><h1>Gestion des maintenances et interventions</h1><p>Planifier les entretiens préventifs et correctifs, coordonner les prestataires, suivre les coûts et documenter la validation technique.</p></section>
     <section className="pillar-grid">
       <article className="pillar-card"><div className="pillar-icon"><CalendarClock size={22}/></div><h3>Plans d’entretien</h3><p>Définir une périodicité en jours ou en mois, par équipement.</p></article>

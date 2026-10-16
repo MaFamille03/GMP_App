@@ -31,8 +31,10 @@ function formatMoney(value: number | string | null | undefined) {
   return `${Number(value).toLocaleString("fr-FR")} FCFA`;
 }
 
-export default async function EquipmentDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EquipmentDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ from?: string; date?: string }> }) {
   const { id } = await params;
+  const { from, date } = await searchParams;
+  const calendarReturnHref = from === "calendar" ? `/calendar${date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? `?date=${date}` : ""}` : null;
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) redirect("/login");
@@ -89,7 +91,7 @@ export default async function EquipmentDetailPage({ params }: { params: Promise<
     <main className="dashboard-shell equipment-detail-page">
       <header className="topbar">
         <Link className="brand" href="/dashboard"><div className="brand-mark">G</div><div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div></Link>
-        <div className="detail-header-actions"><Link className="secondary-button" href="/equipment">Retour à l’inventaire</Link>{isAdmin && <Link className="primary-button" href={`/equipment/${id}/edit`}>Modifier la fiche</Link>}</div>
+        <div className="detail-header-actions">{calendarReturnHref && <Link className="secondary-button" href={calendarReturnHref}>← Retour au calendrier</Link>}<Link className="secondary-button" href="/equipment">Retour à l’inventaire</Link>{isAdmin && <Link className="primary-button" href={`/equipment/${id}/edit${from === "calendar" ? `?from=calendar${date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? `&date=${date}` : ""}` : ""}`}>Modifier la fiche</Link>}</div>
       </header>
 
       <section className="equipment-detail-hero">
