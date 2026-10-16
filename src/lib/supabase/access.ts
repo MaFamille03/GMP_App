@@ -30,6 +30,13 @@ export async function getCurrentAccess() {
 /** Server-side guard for pages that expose mutation controls. */
 export async function requireAdmin() {
   const access = await getCurrentAccess();
+  if (access.profile.role !== "admin" && access.profile.role !== "biomedical_manager") redirect("/dashboard?access=read-only");
+  return access;
+}
+
+/** Strict guard for account administration and security settings. */
+export async function requireAdministrator() {
+  const access = await getCurrentAccess();
   if (!access.isAdmin) redirect("/dashboard?access=read-only");
   return access;
 }

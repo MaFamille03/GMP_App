@@ -10,7 +10,7 @@ export default async function MaintenancePage() {
   if (error || !user) redirect("/login");
   const { data: profile } = await supabase.from("profiles").select("role,is_active").eq("id", user.id).maybeSingle();
   if (!profile || profile.is_active === false) redirect("/access-disabled");
-  const isAdmin = profile.role === "admin";
+  const isAdmin = (profile.role === "admin" || profile.role === "biomedical_manager");
 
   const [{ data: equipment }, { data: plans, error: plansError }, { data: orders, error: ordersError }, { data: profiles }, { data: interventions, error: interventionsError }, { data: vendors, error: vendorsError }] = await Promise.all([
     supabase.from("equipment").select("id,internal_code,designation,operational_status").order("designation"),

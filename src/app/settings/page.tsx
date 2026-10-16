@@ -8,7 +8,8 @@ function ReferenceList({kind,rows,isAdmin,detail}:{kind:"service"|"location"|"ca
 }
 function PanelHeader({eyebrow,title,count}:{eyebrow:string;title:string;count:string}) {return <div className="settings-panel-heading"><div><p className="eyebrow">{eyebrow}</p><h2>{title}</h2></div><span className="phase-tag">{count}</span></div>}
 export default async function SettingsPage(){
- const {supabase,isAdmin}=await getCurrentAccess();
+ const {supabase,profile}=await getCurrentAccess();
+ const isAdmin=profile.role === "admin" || profile.role === "biomedical_manager";
  const [siteR,servicesR,locationsR,categoriesR,vendorsR]=await Promise.all([
   supabase.from("site_settings").select("clinic_name,short_name,address,phone,email,website,report_footer").eq("id",1).maybeSingle(),
   supabase.from("services").select("id,name,code,description,is_active").order("name"),

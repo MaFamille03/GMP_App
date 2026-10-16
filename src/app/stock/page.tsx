@@ -23,7 +23,7 @@ export default async function StockPage() {
     <section className="dashboard-welcome"><p className="eyebrow">ÉTAPE 6 · STOCK BIOMÉDICAL</p><h1>Pièces détachées et consommables</h1><p>Suivre les quantités disponibles, tracer les entrées et sorties et rattacher les consommations aux ordres de travail.</p></section>
     {(partsError || movementsError) && <div className="form-alert form-alert-error">Le stock n’a pas pu être chargé. Applique la migration Supabase de l’étape 6. {(partsError || movementsError)?.message}</div>}
     <section className="maintenance-workspace"><div className="maintenance-workspace-heading"><div><Package size={22}/><div><h2>Gestion du stock</h2><p><ShieldCheck size={14}/> Accès en écriture réservé aux responsables biomédicaux et administrateurs.</p></div></div></div>
-      <StockWorkspace initialParts={parts || []} initialMovements={movements || []} vendors={vendors || []} orders={orders || []} canManage={profile.role === "admin"}/>
+      <StockWorkspace initialParts={parts || []} initialMovements={movements || []} vendors={vendors || []} orders={orders || []} canManage={(profile.role === "admin" || profile.role === "biomedical_manager")}/>
     </section>
   </main>;
 }

@@ -11,7 +11,7 @@ export default async function AccountPage() {
   const serviceRelation = account?.services as { name?: string } | { name?: string }[] | null;
   const serviceName = Array.isArray(serviceRelation) ? serviceRelation[0]?.name : serviceRelation?.name;
   const displayName = account?.display_name || profile.display_name || user.user_metadata?.full_name || "Utilisateur";
-  const roleLabel = isAdmin ? "Administrateur" : "Observateur · lecture seule";
+  const roleLabel = isAdmin ? "Administrateur" : profile.role === "biomedical_manager" ? "Modification du parc" : "Lecture seule";
 
   return <main className="dashboard-shell account-page">
     <header className="topbar"><Link className="brand" href="/dashboard"><div className="brand-mark">G</div><div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div></Link><Link className="secondary-button" href="/dashboard"><ArrowLeft size={15}/> Retour au tableau de bord</Link></header>
@@ -23,7 +23,7 @@ export default async function AccountPage() {
         <div className="account-detail"><span><Mail size={15}/> Adresse e-mail</span><strong>{user.email || "Non renseignée"}</strong></div>
         <div className="account-detail"><span><BadgeCheck size={15}/> Fonction</span><strong>{account?.job_title || user.user_metadata?.job_title || "Non renseignée"}</strong></div>
         <div className="account-detail"><span><Building2 size={15}/> Service associé</span><strong>{serviceName || "Aucun service associé"}</strong></div>
-        <div className="account-detail"><span><ShieldCheck size={15}/> Droits applicatifs</span><strong>{isAdmin ? "Gestion complète du parc" : "Consultation en lecture seule"}</strong></div>
+        <div className="account-detail"><span><ShieldCheck size={15}/> Droits applicatifs</span><strong>{isAdmin ? "Gestion complète du parc et des accès" : profile.role === "biomedical_manager" ? "Consultation et modification des données du parc" : "Consultation en lecture seule"}</strong></div>
         <div className="account-detail"><span><ShieldCheck size={15}/> État du compte</span><strong>{account?.is_active ? "Actif" : "Désactivé"}</strong></div>
       </div>
       <div className="account-profile-note">Pour modifier les droits ou réactiver un compte, une opération administrateur contrôlée est nécessaire. La fonction professionnelle déclarée ne modifie pas les permissions.</div>

@@ -16,7 +16,7 @@ export default async function BreakdownsPage() {
   return <main className="dashboard-shell">
     <header className="topbar"><Link className="brand" href="/dashboard"><div className="brand-mark">G</div><div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div></Link><Link className="secondary-button" href="/dashboard">Retour au tableau de bord</Link></header>
     <section className="dashboard-welcome"><p className="eyebrow">INCIDENTS BIOMÉDICAUX</p><h1>Gestion des pannes</h1><p>Du signalement initial à la vérification technique, chaque dossier conserve son historique et ses rapports.</p></section>
-    {error ? <div className="form-alert form-alert-error">Impossible de charger les pannes : {error.message}</div> : <BreakdownList items={(breakdowns || []) as any} isAdmin={profile.role === "admin"} />}
-    <footer className="footer"><span>GMP · Parc biomédical</span><span>{profile.role === "admin" ? "Administrateur-technicien" : "Consultation en lecture seule"}</span></footer>
+    {error ? <div className="form-alert form-alert-error">Impossible de charger les pannes : {error.message}</div> : <BreakdownList items={(breakdowns || []) as any} isAdmin={(profile.role === "admin" || profile.role === "biomedical_manager")} />}
+    <footer className="footer"><span>GMP · Parc biomédical</span><span>{(profile.role === "admin" || profile.role === "biomedical_manager") ? "Administrateur-technicien" : "Consultation en lecture seule"}</span></footer>
   </main>;
 }

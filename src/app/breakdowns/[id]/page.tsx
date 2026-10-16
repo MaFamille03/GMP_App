@@ -38,7 +38,7 @@ export default async function BreakdownDetailPage({ params }: { params: Promise<
   if (!profile || !profile.is_active) redirect("/access-disabled");
   if (!breakdown && !loadError) notFound();
   const b = breakdown as any;
-  const isAdmin = profile.role === "admin";
+  const isAdmin = (profile.role === "admin" || profile.role === "biomedical_manager");
 
   return <main className="dashboard-shell breakdown-detail-page">
     <header className="topbar"><Link className="brand" href="/dashboard"><div className="brand-mark">G</div><div><strong>GMP POLYCLINIQUE</strong><span>Gestion du parc biomédical</span></div></Link><div className="detail-header-actions"><Link className="secondary-button" href="/breakdowns">Retour aux pannes</Link><PrintButton />{b?.equipment?.id && <Link className="secondary-button" href={`/equipment/${b.equipment.id}`}>Fiche équipement</Link>}</div></header>

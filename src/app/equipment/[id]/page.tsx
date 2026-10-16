@@ -61,7 +61,7 @@ export default async function EquipmentDetailPage({ params }: { params: Promise<
     mainPhotoUrl = data?.signedUrl || null;
   }
 
-  const isAdmin = profile.role === "admin";
+  const isAdmin = (profile.role === "admin" || profile.role === "biomedical_manager");
   const e = equipment as any;
   const fields: [string, string][] = [
     ["Code d’inventaire", e?.internal_code],

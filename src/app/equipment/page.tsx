@@ -13,7 +13,7 @@ export default async function EquipmentPage() {
     supabase.from("equipment_files").select("equipment_id,storage_path,created_at").eq("file_kind", "main_photo").order("created_at", { ascending: false }).limit(4000),
   ]);
   if (!profile || !profile.is_active) redirect("/access-disabled");
-  const isAdmin = profile.role === "admin";
+  const isAdmin = (profile.role === "admin" || profile.role === "biomedical_manager");
   const photoByEquipment = new Map<string, string>();
   const firstPhotoByEquipment = new Map<string, string>();
   for (const photo of photos || []) {

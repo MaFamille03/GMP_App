@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/supabase/access";
+import { requireAdministrator } from "@/lib/supabase/access";
 import { UserAccessManager } from "@/components/user-access-manager";
 
 export default async function UsersPage() {
-  const { supabase, user } = await requireAdmin();
+  const { supabase, user } = await requireAdministrator();
   const { data: profiles, error } = await supabase
     .from("profiles")
     .select("id,display_name,job_title,role,is_active,created_at")

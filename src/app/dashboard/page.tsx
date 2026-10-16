@@ -62,6 +62,7 @@ export default async function DashboardPage() {
   const displayName = profile?.display_name || user.user_metadata?.full_name || user.email || "Utilisateur";
   const jobTitle = profile?.job_title || user.user_metadata?.job_title || "Fonction non renseignée";
   const isAdmin = profile?.role === "admin";
+  const canManage = isAdmin || profile?.role === "biomedical_manager";
   const accountEmail = user.email || "Adresse e-mail non renseignée";
   const serviceCounts = (serviceRows || []).map((service) => ({
     name: service.name,
@@ -108,7 +109,7 @@ export default async function DashboardPage() {
 
         <section className="gmp-page-intro">
           <div><p className="gmp-overline">PILOTAGE BIOMÉDICAL</p><h1>Vue d’ensemble</h1><p>Bonjour {displayName.split(" ")[0]}, voici la situation actuelle du parc et les opérations à suivre.</p></div>
-          <div className="gmp-intro-actions"><Link href="/calendar" className="gmp-calendar-action"><CalendarClock size={17}/> Calendrier</Link>{isAdmin && <Link href="/equipment/new" className="gmp-primary-action"><span>+</span> Ajouter un équipement</Link>}</div>
+          <div className="gmp-intro-actions"><Link href="/calendar" className="gmp-calendar-action"><CalendarClock size={17}/> Calendrier</Link>{canManage && <Link href="/equipment/new" className="gmp-primary-action"><span>+</span> Ajouter un équipement</Link>}</div>
         </section>
 
         {!profile && <div className="form-alert form-alert-error">Le compte est connecté, mais sa fiche profil est introuvable. Vérifie les migrations Supabase.</div>}
@@ -146,7 +147,7 @@ export default async function DashboardPage() {
           <article className="gmp-panel gmp-actions-panel"><div className="gmp-panel-heading"><div><h2>Accès rapides</h2><p>Les tâches les plus courantes</p></div></div>
             <div className="gmp-quick-links">
               <Link href="/equipment" className="gmp-quick-link"><span className="gmp-quick-icon blue"><ClipboardList size={18}/></span><span><strong>Consulter l’inventaire</strong><small>Fiches et états des équipements</small></span><ArrowRight size={16}/></Link>
-              {isAdmin && <Link href="/breakdowns/new" className="gmp-quick-link"><span className="gmp-quick-icon red"><AlertTriangle size={18}/></span><span><strong>Enregistrer une panne</strong><small>Créer un dossier de diagnostic</small></span><ArrowRight size={16}/></Link>}
+              {canManage && <Link href="/breakdowns/new" className="gmp-quick-link"><span className="gmp-quick-icon red"><AlertTriangle size={18}/></span><span><strong>Enregistrer une panne</strong><small>Créer un dossier de diagnostic</small></span><ArrowRight size={16}/></Link>}
               <Link href="/maintenance" className="gmp-quick-link"><span className="gmp-quick-icon amber"><CalendarClock size={18}/></span><span><strong>Suivre la maintenance</strong><small>Échéances et ordres de travail</small></span><ArrowRight size={16}/></Link>
               <Link href="/stock" className="gmp-quick-link"><span className="gmp-quick-icon green"><Package size={18}/></span><span><strong>Pièces détachées & stock</strong><small>Disponibilités et consommations</small></span><ArrowRight size={16}/></Link>
               <Link href="/reports" className="gmp-quick-link"><span className="gmp-quick-icon green"><FileBarChart2 size={18}/></span><span><strong>Consulter les rapports</strong><small>Bilans et données de suivi</small></span><ArrowRight size={16}/></Link>
