@@ -239,7 +239,17 @@ async function createPdf(title: string, subtitle: string, fields: PdfField[]): P
   for (let i = 1; i < offsets.length; i++) xref += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
   xref += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
   chunks.push(str(xref));
-  return new Blob(chunks, { type: "application/pdf" });
+  // Build a concrete ArrayBuffer so TypeScript accepts it as a BlobPart
+  // (Uint8Array<ArrayBufferLike> is not assignable in newer TS DOM typings).
+  const totalLength = chunks.reduce((total, chunk) => total + chunk.length, 0);
+  const pdfBuffer = new ArrayBuffer(totalLength);
+  const pdfBytes = new Uint8Array(pdfBuffer);
+  let cursor = 0;
+  for (const chunk of chunks) {
+    pdfBytes.set(chunk, cursor);
+    cursor += chunk.length;
+  }
+  return new Blob([pdfBuffer], { type: "application/pdf" });
 }
 
 export function PrintButton({ title = "Fiche technique", subtitle = "", fields = [], filename = "GMP_fiche.pdf" }: Props) {
