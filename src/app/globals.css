@@ -1241,3 +1241,38 @@ button, input, select, textarea { font: inherit; }
  .settings-grid .settings-create-form .settings-field-wide, .settings-grid .settings-create-form .primary-button { grid-column: auto; }
  .settings-grid .settings-reference-row { align-items: flex-start !important; }
 }
+
+
+/* Paramètres GMP : quatre référentiels présentés de gauche à droite sur grand écran */
+.settings-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  align-items: start;
+  gap: 14px !important;
+}
+.settings-grid > .settings-panel {
+  min-width: 0;
+  padding: 15px !important;
+}
+.settings-grid .settings-panel-heading { gap: 8px; align-items: flex-start; }
+.settings-grid .settings-panel-heading h2 { font-size: 16px !important; overflow-wrap: anywhere; }
+.settings-grid .settings-panel-heading .phase-tag { font-size: 10px; white-space: normal; text-align: right; }
+.settings-grid .settings-add-reference > summary { padding: 10px; font-size: 12px; }
+/* Dans les colonnes étroites, un champ par ligne évite les formulaires tassés. */
+.settings-grid .settings-add-reference .settings-create-form,
+.settings-grid .reference-edit .settings-create-form {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 9px !important;
+  padding: 10px !important;
+}
+.settings-grid .settings-create-form .settings-field-wide,
+.settings-grid .settings-create-form .primary-button { grid-column: auto !important; }
+.settings-grid .settings-reference-row { gap: 8px; }
+.settings-grid .settings-reference-actions { flex-wrap: wrap; }
+@media (max-width: 1500px) {
+  .settings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 760px) {
+  .settings-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .settings-grid > .settings-panel { padding: 15px !important; }
+}
