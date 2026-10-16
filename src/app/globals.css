@@ -1092,3 +1092,117 @@ button, input, select, textarea { font: inherit; }
 .settings-form input, .settings-form textarea, .settings-form select { margin-top: 0; }
 .settings-panel { margin-bottom: 18px; }
 .settings-panel-heading { margin-bottom: 14px; }
+
+
+/* Revue 2 — taille lisible des textes de suivi, sans toucher aux tableaux/formulaires/cartes KPI */
+.gmp-availability-panel .gmp-legend-row span,
+.gmp-availability-panel .gmp-legend-row strong {
+  font-size: 13px !important;
+}
+.gmp-availability-panel .gmp-legend-row { padding: 12px 16px; gap: 14px; }
+.gmp-availability-panel .gmp-legend-row i { width: 9px; height: 9px; flex: 0 0 9px; }
+.gmp-availability-panel .gmp-availability-number > span { font-size: 14px !important; }
+.gmp-availability-panel .gmp-availability-note { font-size: 12px !important; }
+.gmp-breakdowns-panel .gmp-panel-heading h2,
+.gmp-actions-panel .gmp-panel-heading h2,
+.gmp-panel:not(.gmp-availability-panel) .gmp-panel-heading h2 { font-size: 18px; }
+.gmp-breakdowns-panel .gmp-panel-heading p,
+.gmp-actions-panel .gmp-panel-heading p,
+.gmp-panel:not(.gmp-availability-panel) .gmp-panel-heading p { font-size: 13px; }
+.gmp-quick-link strong { font-size: 13px; }
+.gmp-quick-link small { font-size: 12px; }
+.gmp-panel-bottom, .gmp-panel-bottom a, .gmp-text-link { font-size: 12px; }
+.gmp-service-overview .gmp-service-card-title strong { font-size: 14px; }
+.gmp-service-overview .gmp-service-card-title small,
+.gmp-service-overview .gmp-service-card-footer { font-size: 12px; }
+.gmp-service-overview .gmp-service-status span { font-size: 12px; }
+
+/* Paramètres : présentation compacte en grille, sections faciles à distinguer */
+.settings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px; align-items: start; }
+.settings-grid > .settings-panel { margin: 0; padding: 18px; }
+.settings-grid .settings-panel-heading { margin-bottom: 12px; gap: 10px; }
+.settings-grid .settings-panel-heading h2 { font-size: 18px; }
+.settings-grid .settings-create-form { grid-template-columns: minmax(0, 1fr) !important; gap: 10px; padding: 12px; margin: 8px 0 12px; }
+.settings-grid .settings-create-form label { font-size: 13px; gap: 5px; }
+.settings-grid .settings-create-form input,
+.settings-grid .settings-create-form select { min-height: 40px; padding: 9px 11px; }
+.settings-grid .settings-reference-row { padding: 10px 0; gap: 10px; }
+.settings-grid .settings-reference-main strong { font-size: 13px; }
+.settings-grid .settings-reference-main span,
+.settings-grid .settings-reference-main small { font-size: 12px; line-height: 1.45; }
+.settings-form { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px 16px; }
+.settings-form label { font-size: 13px; }
+.settings-form-actions { grid-column: 1 / -1; }
+@media (max-width: 900px) {
+  .settings-grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .settings-form { grid-template-columns: minmax(0, 1fr) !important; }
+  .settings-form-actions { grid-column: auto; }
+}
+
+
+/* Harmonisation générale de la lisibilité — petits textes de suivi sur toutes les pages */
+.gmp-main-content small,
+.gmp-main-content .gmp-muted,
+.gmp-main-content .gmp-helper-text,
+.gmp-main-content .gmp-kpi-foot,
+.gmp-main-content .gmp-date-cell,
+.gmp-main-content .gmp-breadcrumb,
+.gmp-main-content .gmp-empty-state p,
+.gmp-main-content .equipment-card-meta,
+.gmp-main-content .equipment-card-footer,
+.gmp-main-content .equipment-card-tags,
+.gmp-main-content .equipment-detail-quick-meta,
+.gmp-main-content .equipment-detail-badges,
+.gmp-main-content .equipment-file-meta,
+.gmp-main-content .breakdown-list-footer,
+.gmp-main-content .breakdown-record-number,
+.gmp-main-content .breakdown-symptom-cell,
+.gmp-main-content .breakdown-form-subheading,
+.gmp-main-content .breakdown-timeline-content,
+.gmp-main-content .form-notes-label {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.gmp-main-content label,
+.gmp-main-content .form-section-heading,
+.gmp-main-content .equipment-code,
+.gmp-main-content .equipment-card-tags span,
+.gmp-main-content .equipment-detail-badges span {
+  font-size: 13px;
+  line-height: 1.45;
+}
+.gmp-main-content button,
+.gmp-main-content input,
+.gmp-main-content select,
+.gmp-main-content textarea {
+  font-size: 13px;
+}
+.gmp-main-content .gmp-data-table th,
+.gmp-main-content .gmp-data-table td {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.gmp-main-content .gmp-kpi-top,
+.gmp-main-content .gmp-overline,
+.gmp-main-content .gmp-sidebar-label {
+  font-size: 11px;
+}
+.gmp-main-content .gmp-kpi-foot { gap: 6px; }
+.gmp-main-content .gmp-icon-link svg,
+.gmp-main-content .equipment-file-actions svg { width: 16px; height: 16px; }
+@media (max-width: 780px) {
+  .gmp-main-content small,
+  .gmp-main-content .gmp-muted,
+  .gmp-main-content .gmp-helper-text,
+  .gmp-main-content .gmp-kpi-foot,
+  .gmp-main-content .gmp-date-cell,
+  .gmp-main-content .equipment-card-meta,
+  .gmp-main-content .equipment-card-footer,
+  .gmp-main-content .equipment-file-meta,
+  .gmp-main-content .breakdown-list-footer,
+  .gmp-main-content .breakdown-symptom-cell { font-size: 12px; }
+  .gmp-main-content .gmp-data-table th,
+  .gmp-main-content .gmp-data-table td { font-size: 12px; }
+}
