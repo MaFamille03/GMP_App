@@ -89,6 +89,6 @@ export default async function BreakdownDetailPage({ params }: { params: Promise<
         : !events?.length ? <p className="empty-state">Aucun événement d’historique. Les prochaines modifications seront enregistrées après application de la migration de l’étape 4.</p>
         : <ol className="breakdown-timeline">{events.map((event: any) => <li key={event.id}><span className={`breakdown-timeline-dot event-${event.event_type}`}></span><div className="breakdown-timeline-content"><div className="breakdown-timeline-head"><strong>{eventLabels[event.event_type] || event.event_type}</strong><time>{formatDate(event.created_at)}</time></div><p>{event.summary}</p>{event.from_status && event.to_status && event.from_status !== event.to_status && <small>{statuses[event.from_status] || event.from_status} → {statuses[event.to_status] || event.to_status}</small>}</div></li>)}</ol>}
     </section>
-    <footer className="footer"><span>GMP · Traçabilité des pannes biomédicales</span><span>Les actions consignées ne remplacent pas les procédures de sécurité sur site.</span></footer>
+    <footer className="footer"><span>GMP · Traçabilité des pannes biomédicales</span></footer>
   </main>;
 }

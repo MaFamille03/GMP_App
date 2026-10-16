@@ -176,7 +176,6 @@ export function BreakdownUpdateForm(props: Props) {
       {props.canValidate && <label className="checkbox-label breakdown-validation-checkbox"><input type="checkbox" name="return_to_service_validated" defaultChecked={props.initialValidated || false}/> Je confirme que les contrôles requis ont été réalisés et que l’équipement peut être remis en service.</label>}
       <label>Notes complémentaires<textarea name="notes" rows={3} defaultValue={props.initialNotes || ""}/></label>
 
-      <div className="security-note"><span>!</span><p><strong>Règle GMP :</strong> une intervention externe ne vaut pas validation finale. La clôture exige ton accord explicite, le compte rendu de résolution et les essais consignés. Si l’équipement est non réparable, sélectionne ce statut et ne valide pas sa remise en service.</p></div>
       <div className="detail-actions"><button className="primary-button" disabled={busy}>{busy ? "Enregistrement…" : "Enregistrer le suivi"}</button></div>
     </form>
   );

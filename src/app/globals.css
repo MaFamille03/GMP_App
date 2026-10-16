@@ -1356,3 +1356,86 @@ button, input, select, textarea { font: inherit; }
 .breakdown-sticky-error strong { font-size: 14px; }
 @media (max-width: 900px) { .breakdown-update-form .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .breakdown-update-form .form-grid { grid-template-columns: minmax(0, 1fr); } }
+
+
+/* Densification de l'interface : réduction des espaces vides sans réduire la lisibilité. */
+.dashboard-welcome { padding-top: clamp(20px, 2.5vw, 34px); padding-bottom: 16px; }
+.dashboard-welcome h1 { margin: 6px 0; }
+.dashboard-welcome > p:last-child { margin-top: 5px; line-height: 1.5; }
+.dashboard-shell > section, .dashboard-shell > .maintenance-list, .dashboard-shell > .report-section { margin-bottom: 14px; }
+.maintenance-list, .maintenance-form, .settings-panel, .report-section, .equipment-panel { padding: 16px !important; }
+.section-heading { margin-bottom: 12px; gap: 10px; }
+.form-grid, .detail-grid { gap: 12px; }
+.form-grid label, .maintenance-form > label, .breakdown-update-form > label { gap: 5px; }
+.form-intro { margin-bottom: 8px; }
+.breakdown-detail-columns { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.breakdown-detail-columns > .breakdown-initial-card { grid-column: 1 / -1; width: 100%; min-width: 0; padding: 16px; }
+.breakdown-initial-card .detail-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.breakdown-initial-card h3 { margin: 14px 0 5px; }
+.breakdown-date-list { margin-top: 12px; }
+.breakdown-date-list > div { padding: 8px 0; }
+.breakdown-update-form { gap: 10px; padding: 16px !important; }
+.breakdown-form-subheading { margin: 2px 0 0; padding-top: 10px; }
+.breakdown-history-panel { margin-top: 12px; }
+.breakdown-timeline { margin-top: 12px; }
+.breakdown-timeline li { padding-bottom: 12px; }
+@media (max-width: 900px) { .breakdown-initial-card .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .maintenance-list, .maintenance-form, .settings-panel, .report-section, .equipment-panel { padding: 12px !important; } .breakdown-initial-card .detail-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Harmonisation globale : réduire les espaces inutiles sur toutes les pages GMP. */
+.page-shell { padding-left: clamp(14px, 2vw, 24px); padding-right: clamp(14px, 2vw, 24px); }
+.topbar { padding-top: 14px; padding-bottom: 14px; }
+.hero { padding-top: 42px; padding-bottom: 32px; }
+.dashboard-welcome { padding-top: clamp(14px, 2vw, 24px) !important; padding-bottom: 12px !important; }
+.dashboard-welcome h1 { margin: 4px 0 !important; }
+.dashboard-welcome p { margin-bottom: 4px; }
+.dashboard-shell > section,
+.dashboard-shell > article,
+.dashboard-shell > .maintenance-list,
+.dashboard-shell > .report-section,
+.dashboard-shell > .equipment-panel { margin-bottom: 12px !important; }
+.section-heading { margin-bottom: 10px !important; }
+.maintenance-columns,
+.breakdown-detail-columns,
+.settings-grid,
+.dashboard-grid,
+.stats-grid { gap: 12px !important; }
+.maintenance-list,
+.maintenance-form,
+.settings-panel,
+.report-section,
+.equipment-panel,
+.breakdown-initial-card,
+.breakdown-update-form { padding: 14px !important; }
+.form-grid,
+.detail-grid { gap: 10px 12px !important; }
+.form-grid label,
+.maintenance-form > label,
+.breakdown-update-form > label { gap: 4px !important; }
+input, select, textarea { margin-top: 0; }
+.form-intro { margin: 0 0 8px !important; }
+.eyebrow { margin: 0 0 4px; }
+.section-heading h1,
+.section-heading h2,
+.section-heading h3 { margin-top: 0; margin-bottom: 0; }
+.detail-field { padding: 8px 10px; }
+.breakdown-initial-card { grid-column: 1 / -1 !important; width: 100%; }
+.breakdown-initial-card h3 { margin: 10px 0 4px !important; }
+.breakdown-date-list { margin-top: 8px !important; }
+.breakdown-date-list > div { padding: 6px 0 !important; }
+.breakdown-history-panel { margin-top: 10px !important; }
+.breakdown-timeline { margin-top: 8px !important; }
+.breakdown-timeline li { padding-bottom: 8px !important; }
+.footer { padding-top: 14px; padding-bottom: 14px; }
+@media (max-width: 900px) {
+  .page-shell { padding-left: 16px; padding-right: 16px; }
+  .hero { padding-top: 30px; padding-bottom: 24px; }
+  .maintenance-list, .maintenance-form, .settings-panel, .report-section, .equipment-panel,
+  .breakdown-initial-card, .breakdown-update-form { padding: 12px !important; }
+}
+@media (max-width: 640px) {
+  .page-shell { padding-left: 12px; padding-right: 12px; }
+  .topbar { padding-top: 10px; padding-bottom: 10px; }
+  .hero { padding-top: 24px; padding-bottom: 18px; }
+  .section-heading { align-items: flex-start; }
+}
