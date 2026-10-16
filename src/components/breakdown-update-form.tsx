@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -35,6 +35,11 @@ export function BreakdownUpdateForm(props: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [error]);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -145,7 +150,7 @@ export function BreakdownUpdateForm(props: Props) {
   return (
     <form className="maintenance-form breakdown-update-form" onSubmit={submit}>
       <div><p className="eyebrow">SUIVI TECHNIQUE</p><h2>Diagnostic et intervention</h2><p className="form-intro">Documente les actions réalisées et conserve les éléments nécessaires au rapport technique.</p></div>
-      {error && <div className="form-alert form-alert-error" role="alert">{error}</div>}
+      {error && <div ref={errorRef} className="form-alert form-alert-error breakdown-sticky-error" role="alert"><strong>Enregistrement impossible</strong><span>{error}</span></div>}
       {message && <div className="form-alert form-alert-success" role="status">{message}</div>}
 
       <div className="form-grid">

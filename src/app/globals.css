@@ -1335,3 +1335,24 @@ button, input, select, textarea { font: inherit; }
   .gmp-brand-logo { flex-basis: 148px !important; width: 148px !important; height: 66px !important; }
   .gmp-brand-copy small { font-size: 14px !important; }
 }
+
+/* Ajustements GMP : formulaire de suivi technique sur toute la largeur et erreurs visibles */
+.breakdown-detail-columns > .breakdown-update-form {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.breakdown-update-form > :first-child,
+.breakdown-update-form > .form-alert,
+.breakdown-update-form > .breakdown-form-subheading,
+.breakdown-update-form > .security-note,
+.breakdown-update-form > .detail-actions {
+  grid-column: 1 / -1;
+}
+.breakdown-update-form .form-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.breakdown-sticky-error { position: sticky; top: 12px; z-index: 20; display: grid; gap: 5px; box-shadow: 0 8px 24px rgba(75,22,22,.12); border-width: 2px; font-size: 14px; }
+.breakdown-sticky-error strong { font-size: 14px; }
+@media (max-width: 900px) { .breakdown-update-form .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .breakdown-update-form .form-grid { grid-template-columns: minmax(0, 1fr); } }
